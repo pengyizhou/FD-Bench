@@ -10,6 +10,6 @@ You can find the source code for FD-Bench at:
 [FD-Bench](https://github.com/pengyizhou/FD-Bench)
 
 You can find the entire dataset at:
-[FD-Bench-Audio (Will update soon)]([https://TBD](https://github.com/pengyizhou/FD-Bench))
+[FD-Bench-Audio](https://huggingface.co/collections/pengyizhou/fd-bench-audio-68674bd6de6feea91ba3ce37)
 
 
