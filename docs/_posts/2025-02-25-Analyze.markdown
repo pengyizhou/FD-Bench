@@ -1,0 +1,572 @@
+---
+layout: page
+title:  "Experimental Results & Delay Analysis"
+date:   2025-02-25 17:20:35 +0800
+categories: Demos
+---
+
+
+## Statistics of generated speech corpus
+### User inquiry speech corpus.
+**Easy / Medium / Hard interruption difficulties have diverse speech duration. For the noisy corpus, we generate three different SNR configurations for Easy portion of F5TTS and CosyVoice2.** 
+
+| ID | TTS Engines      | Duration (H) E/M/H | SNR      |
+|----|------------------|--------------------|----------|
+| 1  | ChatTTS          | 4.2 / 2.8 / 2.3    | -        |
+| 2  | F5TTS            | 3.8 / 2.4 / 2.0    | -        |
+| 3  | &nbsp;&nbsp;&nbsp;+Noise-gap    | 3.8 / - / -        | 0/10/20  |
+| 4  | &nbsp;&nbsp;&nbsp;+Noise-bg     | 3.8 / - / -        | 0/10/20  |
+| 5  | CosyVoice2       | 4.2 / 2.8 / 2.4    | -        |
+| 6  | &nbsp;&nbsp;&nbsp;+Noise-gap    | 4.2 / - / -        | 0/10/20  |
+| 7  | &nbsp;&nbsp;&nbsp;+Noise-bg     | 4.2 / - / -        | 0/10/20  |
+
+## Metrics summary
+**The evaluation of model robustness under varying levels of user interruptions. Only the results from speech input simulated using Cosyvoice2 are reported in this paper. WER, SRR, SRIR, SIR, EIR, and C-PPL are assessed over the entire output speech response, while IRD, FSED, ERT, and EIT are reported using the median of all collected time values to mitigate the influence of outliers. The Score is calculated as the arithmetic mean of the six scores corresponding to six sub-perspectives derived from all successful responses.**
+
+| Model         | Data | WER↓ | SRR↑ | SRIR↑ | SIR↑ | EIR↓ | IRD↓  | FSED↓ | ERT | EIT | C-PPL | Score↑ |
+|---------------|------|------|------|-------|------|------|-------|-------|-----|-----|-------|--------|
+| Moshi         | 1-E  | 6.0  | 49.8 | 73.3  | 80.8 | 33.2 | 1660  | 1545  | 232 | 1218| 16    | -   |
+| Moshi         | 1-M  | 6.2  | 36.6 | 63.0  | 76.8 | 31.5 | 1436  | 1071  | 192 | 1245| 22    | -   |
+| Moshi         | 1-H  | 5.4  | 27.5 | 63.5  | 71.6 | 26.6 | 1499  | 1005  | 168 | 1180| 26    | -   |
+| Moshi         | 2-E  | 5.8  | 64.5 | 85.7  | 71.4 | 16.9 | 1472  | 212   | 61  | 1750| 16    | -   |
+| Moshi         | 2-M  | 4.8  | 46.8 | 75.8  | 65.0 | 15.3 | 1404  | 130   | 55  | 1903| 21    | -   |
+| Moshi         | 2-H  | 5.7  | 34.4 | 72.5  | 63.5 | 12.1 | 1451  | 127   | 58  | 1663| 29    | -   |
+| Moshi         | 5-E  | 5.3  | 61.7 | 79.4  | 83.1 | 27.9 | 1345  | 4155  | 221 | 2008| 20    | 4.43   |
+| Moshi         | 5-M  | 5.0  | 45.6 | 78.4  | 77.1 | 23.1 | 1453  | 2735  | 235 | 1887| 18    | 4.55   |
+| Moshi         | 5-H  | 5.0  | 34.1 | 75.3  | 73.0 | 19.5 | 1527  | 2020  | 235 | 1649| 25    | 4.42   |
+| Freeze-omni   | 1-E  | -    | 14.3 | 49.9  | 72.5 | 20.5 | 3461  | 632  | 249 | 1299| 34    | -   |
+| Freeze-omni   | 1-M  | -    | 10.9 | 30.6  | 50.7 | 12.1 | 13067  | 624  | 262 | 1470| 24    | -   |
+| Freeze-omni   | 1-H  | -    | 10.0 | 21.8  | 46.6 | 10.3 | 13359  | 534  | 228 | 1675| 174    | -   |
+| Freeze-omni   | 2-E  | -    | 14.5 | 40.0  | 64.8 | 20.2 | 12407  | 685  | 263 | 1510| 53   | -   |
+| Freeze-omni   | 2-M  | -    | 14.8 | 29.0  | 47.9 | 13.5 | 12315  | 648  | 235 | 1353| 132    | -   |
+| Freeze-omni   | 2-H  | -    | 14.3 | 22.9  | 45.0 | 14.6 | 12158  | 656  | 274 | 1454| 145   | -   |
+| Freeze-omni   | 5-E  | -    | 11.3 | 35.5  | 66.5 | 31.5 | 3618  | 515   | 180 | 2027| 73    | 3.29   |
+| Freeze-omni   | 5-M  | -    | 11.7 | 21.7  | 49.4 | 23.5 | 12200 | 449   | 259 | 2047| 80    | 3.38   |
+| Freeze-omni   | 5-H  | -    | 11.2 | 18.3  | 49.0 | 23.7 | 11927 | 456   | 311 | 2093| 110   | 3.14   |
+| VITA-1.5      | 1-E  | -    | 20.3 | 56.0  | 66.8 | 9.2 | 15288  | 4847  | 255 | 2122| 29    | -   |
+| VITA-1.5      | 1-M  | -    | 13.9 | 48.0  | 69.3 | 18.4 | 14144 | 2932  | 325 | 2046 | 47    | -   |
+| VITA-1.5      | 1-H  | -    | 15.4 | 41.6  | 67.8 | 18.1 | 13768 | 1833  | 239 | 1916| 43    | -   |
+| VITA-1.5      | 2-E  | -    | 21.0 | 53.3  | 68.2 | 14.0 | 13349 | 4853  | 312 | 1872| 27    | -   |
+| VITA-1.5      | 2-M  | -    | 17.8 | 46.0  | 71.8 | 17.9 | 12632 | 2602  | 218 | 1829| 52    | -   |
+| VITA-1.5      | 2-H  | -    | 17.4 | 40.0  | 68.1 | 18.9 | 12164 | 1989  | 164 | 1845| 45    | -   |
+| VITA-1.5      | 5-E  | -    | 26.9 | 54.7  | 75.7 | 25.1 | 13063 | 4242  | 234 | 2289| 28    | 2.68   |
+| VITA-1.5      | 5-M  | -    | 18.3 | 48.5  | 81.9 | 32.5 | 10759 | 2601  | 176 | 2174| 60    | 2.44   |
+| VITA-1.5      | 5-H  | -    | 17.1 | 45.7  | 78.0 | 35.1 | 4651  | 1840  | 253 | 2270| 50    | 2.27   |
+
+## Delay Distribution
+### Moshi
+#### Chattts-Easy
+
+<div style="display: flex; justify-content: space-around;">
+  <figure style="margin: 0 10px;">
+    <img src="{{ '/assets/pie_charts/moshi/chattts-easy/response_delays.png' | relative_url }}" alt="Image 1" style="max-width: 100%;">
+    <figcaption style="text-align: center;">response_delays</figcaption>
+  </figure>
+  <figure style="margin: 0 10px;">
+    <img src="{{ '/assets/pie_charts/moshi/chattts-easy/response_delays_to_interruption.png' | relative_url }}" alt="Image 2" style="max-width: 100%;">
+    <figcaption style="text-align: center;">response_delays_to_interruption</figcaption>
+  </figure>
+</div>
+<div style="display: flex; justify-content: space-around;">
+<figure style="margin: 0 10px;">
+    <img src="{{ '/assets/pie_charts/moshi/chattts-easy/interruption_success_delays.png' | relative_url }}" style="max-width: 100%;">
+<figcaption style="text-align: center;">interruption_delays</figcaption>
+</figure>
+</div>
+
+#### Chattts-Med
+
+<div style="display: flex; justify-content: space-around;">
+  <figure style="margin: 0 10px;">
+    <img src="{{ '/assets/pie_charts/moshi/chattts-med/response_delays.png' | relative_url }}" alt="Image 1" style="max-width: 100%;">
+    <figcaption style="text-align: center;">response_delays</figcaption>
+  </figure>
+  <figure style="margin: 0 10px;">
+    <img src="{{ '/assets/pie_charts/moshi/chattts-med/response_delays_to_interruption.png' | relative_url }}" alt="Image 2" style="max-width: 100%;">
+    <figcaption style="text-align: center;">response_delays_to_interruption</figcaption>
+  </figure>
+</div>
+<div style="display: flex; justify-content: space-around;">
+<figure style="margin: 0 10px;">
+    <img src="{{ '/assets/pie_charts/moshi/chattts-med/interruption_success_delays.png' | relative_url }}" style="max-width: 100%;">
+<figcaption style="text-align: center;">interruption_delays</figcaption>
+</figure>
+</div>
+
+#### Chattts-Hard
+
+<div style="display: flex; justify-content: space-around;">
+  <figure style="margin: 0 10px;">
+    <img src="{{ '/assets/pie_charts/moshi/chattts-hard/response_delays.png' | relative_url }}" alt="Image 1" style="max-width: 100%;">
+    <figcaption style="text-align: center;">response_delays</figcaption>
+  </figure>
+  <figure style="margin: 0 10px;">
+    <img src="{{ '/assets/pie_charts/moshi/chattts-hard/response_delays_to_interruption.png' | relative_url }}" alt="Image 2" style="max-width: 100%;">
+    <figcaption style="text-align: center;">response_delays_to_interruption</figcaption>
+  </figure>
+</div>
+<div style="display: flex; justify-content: space-around;">
+<figure style="margin: 0 10px;">
+    <img src="{{ '/assets/pie_charts/moshi/chattts-hard/interruption_success_delays.png' | relative_url }}" style="max-width: 100%;">
+<figcaption style="text-align: center;">interruption_delays</figcaption>
+</figure>
+</div>
+
+#### F5tts-Easy
+
+<div style="display: flex; justify-content: space-around;">
+  <figure style="margin: 0 10px;">
+    <img src="{{ '/assets/pie_charts/moshi/f5tts-easy/response_delays.png' | relative_url }}" alt="Image 1" style="max-width: 100%;">
+    <figcaption style="text-align: center;">response_delays</figcaption>
+  </figure>
+  <figure style="margin: 0 10px;">
+    <img src="{{ '/assets/pie_charts/moshi/f5tts-easy/response_delays_to_interruption.png' | relative_url }}" alt="Image 2" style="max-width: 100%;">
+    <figcaption style="text-align: center;">response_delays_to_interruption</figcaption>
+  </figure>
+</div>
+<div style="display: flex; justify-content: space-around;">
+<figure style="margin: 0 10px;">
+    <img src="{{ '/assets/pie_charts/moshi/f5tts-easy/interruption_success_delays.png' | relative_url }}" style="max-width: 100%;">
+<figcaption style="text-align: center;">interruption_delays</figcaption>
+</figure>
+</div>
+
+#### F5tts-Med
+
+<div style="display: flex; justify-content: space-around;">
+  <figure style="margin: 0 10px;">
+    <img src="{{ '/assets/pie_charts/moshi/f5tts-med/response_delays.png' | relative_url }}" alt="Image 1" style="max-width: 100%;">
+    <figcaption style="text-align: center;">response_delays</figcaption>
+  </figure>
+  <figure style="margin: 0 10px;">
+    <img src="{{ '/assets/pie_charts/moshi/f5tts-med/response_delays_to_interruption.png' | relative_url }}" alt="Image 2" style="max-width: 100%;">
+    <figcaption style="text-align: center;">response_delays_to_interruption</figcaption>
+  </figure>
+</div>
+<div style="display: flex; justify-content: space-around;">
+<figure style="margin: 0 10px;">
+    <img src="{{ '/assets/pie_charts/moshi/f5tts-med/interruption_success_delays.png' | relative_url }}" style="max-width: 100%;">
+<figcaption style="text-align: center;">interruption_delays</figcaption>
+</figure>
+</div>
+
+#### F5tts-Hard
+
+<div style="display: flex; justify-content: space-around;">
+  <figure style="margin: 0 10px;">
+    <img src="{{ '/assets/pie_charts/moshi/f5tts-hard/response_delays.png' | relative_url }}" alt="Image 1" style="max-width: 100%;">
+    <figcaption style="text-align: center;">response_delays</figcaption>
+  </figure>
+  <figure style="margin: 0 10px;">
+    <img src="{{ '/assets/pie_charts/moshi/f5tts-hard/response_delays_to_interruption.png' | relative_url }}" alt="Image 2" style="max-width: 100%;">
+    <figcaption style="text-align: center;">response_delays_to_interruption</figcaption>
+  </figure>
+</div>
+<div style="display: flex; justify-content: space-around;">
+<figure style="margin: 0 10px;">
+    <img src="{{ '/assets/pie_charts/moshi/f5tts-hard/interruption_success_delays.png' | relative_url }}" style="max-width: 100%;">
+<figcaption style="text-align: center;">interruption_delays</figcaption>
+</figure>
+</div>
+
+#### Cosyvoice2-Easy
+
+<div style="display: flex; justify-content: space-around;">
+  <figure style="margin: 0 10px;">
+    <img src="{{ '/assets/pie_charts/moshi/cosy-easy/response_delays.png' | relative_url }}" alt="Image 1" style="max-width: 100%;">
+    <figcaption style="text-align: center;">response_delays</figcaption>
+  </figure>
+  <figure style="margin: 0 10px;">
+    <img src="{{ '/assets/pie_charts/moshi/cosy-easy/response_delays_to_interruption.png' | relative_url }}" alt="Image 2" style="max-width: 100%;">
+    <figcaption style="text-align: center;">response_delays_to_interruption</figcaption>
+  </figure>
+
+</div>
+<div style="display: flex; justify-content: space-around;">
+<figure style="margin: 0 10px;">
+    <img src="{{ '/assets/pie_charts/moshi/cosy-easy/interruption_success_delays.png' | relative_url }}" style="max-width: 100%;">
+<figcaption style="text-align: center;">interruption_delays</figcaption>
+</figure>
+</div>
+
+#### Cosyvoice2-Med
+
+<div style="display: flex; justify-content: space-around;">
+  <figure style="margin: 0 10px;">
+    <img src="{{ '/assets/pie_charts/moshi/cosy-med/response_delays.png' | relative_url }}" alt="Image 1" style="max-width: 100%;">
+    <figcaption style="text-align: center;">response_delays</figcaption>
+  </figure>
+  <figure style="margin: 0 10px;">
+    <img src="{{ '/assets/pie_charts/moshi/cosy-med/response_delays_to_interruption.png' | relative_url }}" alt="Image 2" style="max-width: 100%;">
+    <figcaption style="text-align: center;">response_delays_to_interruption</figcaption>
+  </figure>
+</div>
+<div style="display: flex; justify-content: space-around;">
+<figure style="margin: 0 10px;">
+    <img src="{{ '/assets/pie_charts/moshi/cosy-med/interruption_success_delays.png' | relative_url }}" style="max-width: 100%;">
+<figcaption style="text-align: center;">interruption_delays</figcaption>
+</figure>
+</div>
+
+#### Cosyvoice2-Hard
+
+<div style="display: flex; justify-content: space-around;">
+  <figure style="margin: 0 10px;">
+    <img src="{{ '/assets/pie_charts/moshi/cosy-hard/response_delays.png' | relative_url }}" alt="Image 1" style="max-width: 100%;">
+    <figcaption style="text-align: center;">response_delays</figcaption>
+  </figure>
+  <figure style="margin: 0 10px;">
+    <img src="{{ '/assets/pie_charts/moshi/cosy-hard/response_delays_to_interruption.png' | relative_url }}" alt="Image 2" style="max-width: 100%;">
+    <figcaption style="text-align: center;">response_delays_to_interruption</figcaption>
+  </figure>
+</div>
+<div style="display: flex; justify-content: space-around;">
+<figure style="margin: 0 10px;">
+    <img src="{{ '/assets/pie_charts/moshi/cosy-hard/interruption_success_delays.png' | relative_url }}" style="max-width: 100%;">
+<figcaption style="text-align: center;">interruption_delays</figcaption>
+</figure>
+</div>
+
+### Freeze-omni
+#### Chattts-Easy
+
+<div style="display: flex; justify-content: space-around;">
+  <figure style="margin: 0 10px;">
+    <img src="{{ '/assets/pie_charts/omni/chattts-easy/response_delays.png' | relative_url }}" alt="Image 1" style="max-width: 100%;">
+    <figcaption style="text-align: center;">response_delays</figcaption>
+  </figure>
+  <figure style="margin: 0 10px;">
+    <img src="{{ '/assets/pie_charts/omni/chattts-easy/response_delays_to_interruption.png' | relative_url }}" alt="Image 2" style="max-width: 100%;">
+    <figcaption style="text-align: center;">response_delays_to_interruption</figcaption>
+  </figure>
+</div>
+<div style="display: flex; justify-content: space-around;">
+<figure style="margin: 0 10px;">
+    <img src="{{ '/assets/pie_charts/omni/chattts-easy/interruption_success_delays.png' | relative_url }}" style="max-width: 100%;">
+<figcaption style="text-align: center;">interruption_delays</figcaption>
+</figure>
+</div>
+
+#### Chattts-Med
+
+<div style="display: flex; justify-content: space-around;">
+  <figure style="margin: 0 10px;">
+    <img src="{{ '/assets/pie_charts/omni/chattts-med/response_delays.png' | relative_url }}" alt="Image 1" style="max-width: 100%;">
+    <figcaption style="text-align: center;">response_delays</figcaption>
+  </figure>
+  <figure style="margin: 0 10px;">
+    <img src="{{ '/assets/pie_charts/omni/chattts-med/response_delays_to_interruption.png' | relative_url }}" alt="Image 2" style="max-width: 100%;">
+    <figcaption style="text-align: center;">response_delays_to_interruption</figcaption>
+  </figure>
+</div>
+<div style="display: flex; justify-content: space-around;">
+<figure style="margin: 0 10px;">
+    <img src="{{ '/assets/pie_charts/omni/chattts-med/interruption_success_delays.png' | relative_url }}" style="max-width: 100%;">
+<figcaption style="text-align: center;">interruption_delays</figcaption>
+</figure>
+</div>
+
+#### Chattts-Hard
+
+<div style="display: flex; justify-content: space-around;">
+  <figure style="margin: 0 10px;">
+    <img src="{{ '/assets/pie_charts/omni/chattts-hard/response_delays.png' | relative_url }}" alt="Image 1" style="max-width: 100%;">
+    <figcaption style="text-align: center;">response_delays</figcaption>
+  </figure>
+  <figure style="margin: 0 10px;">
+    <img src="{{ '/assets/pie_charts/omni/chattts-hard/response_delays_to_interruption.png' | relative_url }}" alt="Image 2" style="max-width: 100%;">
+    <figcaption style="text-align: center;">response_delays_to_interruption</figcaption>
+  </figure>
+</div>
+<div style="display: flex; justify-content: space-around;">
+<figure style="margin: 0 10px;">
+    <img src="{{ '/assets/pie_charts/omni/chattts-hard/interruption_success_delays.png' | relative_url }}" style="max-width: 100%;">
+<figcaption style="text-align: center;">interruption_delays</figcaption>
+</figure>
+</div>
+
+#### F5tts-Easy
+
+<div style="display: flex; justify-content: space-around;">
+  <figure style="margin: 0 10px;">
+    <img src="{{ '/assets/pie_charts/omni/f5tts-easy/response_delays.png' | relative_url }}" alt="Image 1" style="max-width: 100%;">
+    <figcaption style="text-align: center;">response_delays</figcaption>
+  </figure>
+  <figure style="margin: 0 10px;">
+    <img src="{{ '/assets/pie_charts/omni/f5tts-easy/response_delays_to_interruption.png' | relative_url }}" alt="Image 2" style="max-width: 100%;">
+    <figcaption style="text-align: center;">response_delays_to_interruption</figcaption>
+  </figure>
+</div>
+<div style="display: flex; justify-content: space-around;">
+<figure style="margin: 0 10px;">
+    <img src="{{ '/assets/pie_charts/omni/f5tts-easy/interruption_success_delays.png' | relative_url }}" style="max-width: 100%;">
+<figcaption style="text-align: center;">interruption_delays</figcaption>
+</figure>
+</div>
+
+#### F5tts-Med
+
+<div style="display: flex; justify-content: space-around;">
+  <figure style="margin: 0 10px;">
+    <img src="{{ '/assets/pie_charts/omni/f5tts-med/response_delays.png' | relative_url }}" alt="Image 1" style="max-width: 100%;">
+    <figcaption style="text-align: center;">response_delays</figcaption>
+  </figure>
+  <figure style="margin: 0 10px;">
+    <img src="{{ '/assets/pie_charts/omni/f5tts-med/response_delays_to_interruption.png' | relative_url }}" alt="Image 2" style="max-width: 100%;">
+    <figcaption style="text-align: center;">response_delays_to_interruption</figcaption>
+  </figure>
+</div>
+<div style="display: flex; justify-content: space-around;">
+<figure style="margin: 0 10px;">
+    <img src="{{ '/assets/pie_charts/omni/f5tts-med/interruption_success_delays.png' | relative_url }}" style="max-width: 100%;">
+<figcaption style="text-align: center;">interruption_delays</figcaption>
+</figure>
+</div>
+
+#### F5tts-Hard
+
+<div style="display: flex; justify-content: space-around;">
+  <figure style="margin: 0 10px;">
+    <img src="{{ '/assets/pie_charts/omni/f5tts-hard/response_delays.png' | relative_url }}" alt="Image 1" style="max-width: 100%;">
+    <figcaption style="text-align: center;">response_delays</figcaption>
+  </figure>
+  <figure style="margin: 0 10px;">
+    <img src="{{ '/assets/pie_charts/omni/f5tts-hard/response_delays_to_interruption.png' | relative_url }}" alt="Image 2" style="max-width: 100%;">
+    <figcaption style="text-align: center;">response_delays_to_interruption</figcaption>
+  </figure>
+</div>
+<div style="display: flex; justify-content: space-around;">
+<figure style="margin: 0 10px;">
+    <img src="{{ '/assets/pie_charts/omni/f5tts-hard/interruption_success_delays.png' | relative_url }}" style="max-width: 100%;">
+<figcaption style="text-align: center;">interruption_delays</figcaption>
+</figure>
+</div>
+
+#### Cosyvoice2-Easy
+
+<div style="display: flex; justify-content: space-around;">
+  <figure style="margin: 0 10px;">
+    <img src="{{ '/assets/pie_charts/omni/cosy-easy/response_delays.png' | relative_url }}" alt="Image 1" style="max-width: 100%;">
+    <figcaption style="text-align: center;">response_delays</figcaption>
+  </figure>
+  <figure style="margin: 0 10px;">
+    <img src="{{ '/assets/pie_charts/omni/cosy-easy/response_delays_to_interruption.png' | relative_url }}" alt="Image 2" style="max-width: 100%;">
+    <figcaption style="text-align: center;">response_delays_to_interruption</figcaption>
+  </figure>
+  </div>
+<div style="display: flex; justify-content: space-around;">
+<figure style="margin: 0 10px;">
+    <img src="{{ '/assets/pie_charts/omni/cosy-easy/interruption_success_delays.png' | relative_url }}" style="max-width: 100%;">
+<figcaption style="text-align: center;">interruption_delays</figcaption>
+</figure>
+</div>
+
+#### Cosyvoice2-Med
+
+<div style="display: flex; justify-content: space-around;">
+  <figure style="margin: 0 10px;">
+    <img src="{{ '/assets/pie_charts/omni/cosy-med/response_delays.png' | relative_url }}" alt="Image 1" style="max-width: 100%;">
+    <figcaption style="text-align: center;">response_delays</figcaption>
+  </figure>
+  <figure style="margin: 0 10px;">
+    <img src="{{ '/assets/pie_charts/omni/cosy-med/response_delays_to_interruption.png' | relative_url }}" alt="Image 2" style="max-width: 100%;">
+    <figcaption style="text-align: center;">response_delays_to_interruption</figcaption>
+  </figure>
+</div>
+<div style="display: flex; justify-content: space-around;">
+<figure style="margin: 0 10px;">
+    <img src="{{ '/assets/pie_charts/omni/cosy-med/interruption_success_delays.png' | relative_url }}" style="max-width: 100%;">
+<figcaption style="text-align: center;">interruption_delays</figcaption>
+</figure>
+</div>
+
+#### Cosyvoice2-Hard
+
+<div style="display: flex; justify-content: space-around;">
+  <figure style="margin: 0 10px;">
+    <img src="{{ '/assets/pie_charts/omni/cosy-hard/response_delays.png' | relative_url }}" alt="Image 1" style="max-width: 100%;">
+    <figcaption style="text-align: center;">response_delays</figcaption>
+  </figure>
+  <figure style="margin: 0 10px;">
+    <img src="{{ '/assets/pie_charts/omni/cosy-hard/response_delays_to_interruption.png' | relative_url }}" alt="Image 2" style="max-width: 100%;">
+    <figcaption style="text-align: center;">response_delays_to_interruption</figcaption>
+  </figure>
+</div>
+<div style="display: flex; justify-content: space-around;">
+<figure style="margin: 0 10px;">
+    <img src="{{ '/assets/pie_charts/omni/cosy-hard/interruption_success_delays.png' | relative_url }}" style="max-width: 100%;">
+<figcaption style="text-align: center;">interruption_delays</figcaption>
+</figure>
+</div>
+
+### VITA-1.5
+#### Chattts-Easy
+
+<div style="display: flex; justify-content: space-around;">
+  <figure style="margin: 0 10px;">
+    <img src="{{ '/assets/pie_charts/vita/chattts-easy/response_delays.png' | relative_url }}" alt="Image 1" style="max-width: 100%;">
+    <figcaption style="text-align: center;">response_delays</figcaption>
+  </figure>
+  <figure style="margin: 0 10px;">
+    <img src="{{ '/assets/pie_charts/vita/chattts-easy/response_delays_to_interruption.png' | relative_url }}" alt="Image 2" style="max-width: 100%;">
+    <figcaption style="text-align: center;">response_delays_to_interruption</figcaption>
+  </figure>
+</div>
+<div style="display: flex; justify-content: space-around;">
+<figure style="margin: 0 10px;">
+    <img src="{{ '/assets/pie_charts/vita/chattts-easy/interruption_success_delays.png' | relative_url }}" style="max-width: 100%;">
+<figcaption style="text-align: center;">interruption_delays</figcaption>
+</figure>
+</div>
+
+#### Chattts-Med
+
+<div style="display: flex; justify-content: space-around;">
+  <figure style="margin: 0 10px;">
+    <img src="{{ '/assets/pie_charts/vita/chattts-med/response_delays.png' | relative_url }}" alt="Image 1" style="max-width: 100%;">
+    <figcaption style="text-align: center;">response_delays</figcaption>
+  </figure>
+  <figure style="margin: 0 10px;">
+    <img src="{{ '/assets/pie_charts/vita/chattts-med/response_delays_to_interruption.png' | relative_url }}" alt="Image 2" style="max-width: 100%;">
+    <figcaption style="text-align: center;">response_delays_to_interruption</figcaption>
+  </figure>
+</div>
+<div style="display: flex; justify-content: space-around;">
+<figure style="margin: 0 10px;">
+    <img src="{{ '/assets/pie_charts/vita/chattts-med/interruption_success_delays.png' | relative_url }}" style="max-width: 100%;">
+<figcaption style="text-align: center;">interruption_delays</figcaption>
+</figure>
+</div>
+
+#### Chattts-Hard
+
+<div style="display: flex; justify-content: space-around;">
+  <figure style="margin: 0 10px;">
+    <img src="{{ '/assets/pie_charts/vita/chattts-hard/response_delays.png' | relative_url }}" alt="Image 1" style="max-width: 100%;">
+    <figcaption style="text-align: center;">response_delays</figcaption>
+  </figure>
+  <figure style="margin: 0 10px;">
+    <img src="{{ '/assets/pie_charts/vita/chattts-hard/response_delays_to_interruption.png' | relative_url }}" alt="Image 2" style="max-width: 100%;">
+    <figcaption style="text-align: center;">response_delays_to_interruption</figcaption>
+  </figure>
+</div>
+<div style="display: flex; justify-content: space-around;">
+<figure style="margin: 0 10px;">
+    <img src="{{ '/assets/pie_charts/vita/chattts-hard/interruption_success_delays.png' | relative_url }}" style="max-width: 100%;">
+<figcaption style="text-align: center;">interruption_delays</figcaption>
+</figure>
+</div>
+
+#### F5tts-Easy
+
+<div style="display: flex; justify-content: space-around;">
+  <figure style="margin: 0 10px;">
+    <img src="{{ '/assets/pie_charts/vita/f5tts-easy/response_delays.png' | relative_url }}" alt="Image 1" style="max-width: 100%;">
+    <figcaption style="text-align: center;">response_delays</figcaption>
+  </figure>
+  <figure style="margin: 0 10px;">
+    <img src="{{ '/assets/pie_charts/vita/f5tts-easy/response_delays_to_interruption.png' | relative_url }}" alt="Image 2" style="max-width: 100%;">
+    <figcaption style="text-align: center;">response_delays_to_interruption</figcaption>
+  </figure>
+</div>
+<div style="display: flex; justify-content: space-around;">
+<figure style="margin: 0 10px;">
+    <img src="{{ '/assets/pie_charts/vita/f5tts-easy/interruption_success_delays.png' | relative_url }}" style="max-width: 100%;">
+<figcaption style="text-align: center;">interruption_delays</figcaption>
+</figure>
+</div>
+
+#### F5tts-Med
+
+<div style="display: flex; justify-content: space-around;">
+  <figure style="margin: 0 10px;">
+    <img src="{{ '/assets/pie_charts/vita/f5tts-med/response_delays.png' | relative_url }}" alt="Image 1" style="max-width: 100%;">
+    <figcaption style="text-align: center;">response_delays</figcaption>
+  </figure>
+  <figure style="margin: 0 10px;">
+    <img src="{{ '/assets/pie_charts/vita/f5tts-med/response_delays_to_interruption.png' | relative_url }}" alt="Image 2" style="max-width: 100%;">
+    <figcaption style="text-align: center;">response_delays_to_interruption</figcaption>
+  </figure>
+</div>
+<div style="display: flex; justify-content: space-around;">
+<figure style="margin: 0 10px;">
+    <img src="{{ '/assets/pie_charts/vita/f5tts-med/interruption_success_delays.png' | relative_url }}" style="max-width: 100%;">
+<figcaption style="text-align: center;">interruption_delays</figcaption>
+</figure>
+</div>
+
+#### F5tts-Hard
+
+<div style="display: flex; justify-content: space-around;">
+  <figure style="margin: 0 10px;">
+    <img src="{{ '/assets/pie_charts/vita/f5tts-hard/response_delays.png' | relative_url }}" alt="Image 1" style="max-width: 100%;">
+    <figcaption style="text-align: center;">response_delays</figcaption>
+  </figure>
+  <figure style="margin: 0 10px;">
+    <img src="{{ '/assets/pie_charts/vita/f5tts-hard/response_delays_to_interruption.png' | relative_url }}" alt="Image 2" style="max-width: 100%;">
+    <figcaption style="text-align: center;">response_delays_to_interruption</figcaption>
+  </figure>
+</div>
+<div style="display: flex; justify-content: space-around;">
+<figure style="margin: 0 10px;">
+    <img src="{{ '/assets/pie_charts/vita/f5tts-hard/interruption_success_delays.png' | relative_url }}" style="max-width: 100%;">
+<figcaption style="text-align: center;">interruption_delays</figcaption>
+</figure>
+</div>
+
+#### Cosyvoice2-Easy
+
+<div style="display: flex; justify-content: space-around;">
+  <figure style="margin: 0 10px;">
+    <img src="{{ '/assets/pie_charts/vita/cosy-easy/response_delays.png' | relative_url }}" alt="Image 1" style="max-width: 100%;">
+    <figcaption style="text-align: center;">response_delays</figcaption>
+  </figure>
+  <figure style="margin: 0 10px;">
+    <img src="{{ '/assets/pie_charts/vita/cosy-easy/response_delays_to_interruption.png' | relative_url }}" alt="Image 2" style="max-width: 100%;">
+    <figcaption style="text-align: center;">response_delays_to_interruption</figcaption>
+  </figure>
+  </div>
+<div style="display: flex; justify-content: space-around;">
+<figure style="margin: 0 10px;">
+    <img src="{{ '/assets/pie_charts/vita/cosy-easy/interruption_success_delays.png' | relative_url }}" style="max-width: 100%;">
+<figcaption style="text-align: center;">interruption_delays</figcaption>
+</figure>
+</div>
+
+#### Cosyvoice2-Med
+
+<div style="display: flex; justify-content: space-around;">
+  <figure style="margin: 0 10px;">
+    <img src="{{ '/assets/pie_charts/vita/cosy-med/response_delays.png' | relative_url }}" alt="Image 1" style="max-width: 100%;">
+    <figcaption style="text-align: center;">response_delays</figcaption>
+  </figure>
+  <figure style="margin: 0 10px;">
+    <img src="{{ '/assets/pie_charts/vita/cosy-med/response_delays_to_interruption.png' | relative_url }}" alt="Image 2" style="max-width: 100%;">
+    <figcaption style="text-align: center;">response_delays_to_interruption</figcaption>
+  </figure>
+</div>
+<div style="display: flex; justify-content: space-around;">
+<figure style="margin: 0 10px;">
+    <img src="{{ '/assets/pie_charts/vita/cosy-med/interruption_success_delays.png' | relative_url }}" style="max-width: 100%;">
+<figcaption style="text-align: center;">interruption_delays</figcaption>
+</figure>
+</div>
+
+#### Cosyvoice2-Hard
+
+<div style="display: flex; justify-content: space-around;">
+  <figure style="margin: 0 10px;">
+    <img src="{{ '/assets/pie_charts/vita/cosy-hard/response_delays.png' | relative_url }}" alt="Image 1" style="max-width: 100%;">
+    <figcaption style="text-align: center;">response_delays</figcaption>
+  </figure>
+  <figure style="margin: 0 10px;">
+    <img src="{{ '/assets/pie_charts/vita/cosy-hard/response_delays_to_interruption.png' | relative_url }}" alt="Image 2" style="max-width: 100%;">
+    <figcaption style="text-align: center;">response_delays_to_interruption</figcaption>
+  </figure>
+</div>
+<div style="display: flex; justify-content: space-around;">
+<figure style="margin: 0 10px;">
+    <img src="{{ '/assets/pie_charts/vita/cosy-hard/interruption_success_delays.png' | relative_url }}" style="max-width: 100%;">
+<figcaption style="text-align: center;">interruption_delays</figcaption>
+</figure>
+</div>

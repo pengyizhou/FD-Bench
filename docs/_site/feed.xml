@@ -1,0 +1,1131 @@
+<?xml version="1.0" encoding="utf-8"?><feed xmlns="http://www.w3.org/2005/Atom" ><generator uri="https://jekyllrb.com/" version="3.10.0">Jekyll</generator><link href="http://localhost:4000/feed.xml" rel="self" type="application/atom+xml" /><link href="http://localhost:4000/" rel="alternate" type="text/html" /><updated>2025-07-01T17:31:52+08:00</updated><id>http://localhost:4000/feed.xml</id><title type="html">FD-Bench</title><subtitle>Full-duplex spoken dialogue systems (FDSDS) enable more natural human-machine interactions by allowing real-time user interruptions and backchanneling, compared with traditional SDS relying on turn-taking manners. However, current benchmarking lacks evaluation metrics for FD scenes, e.g., evaluating model performance under user interruption cases. In this paper, we present a comprehensive FD benchmarking pipeline utilizing LLMs, TTS, and ASR to address this gap. It assesses FDSDS’s ability to handle user interruptions, manage delays, and robustness in challenging scenarios with diverse novel metrics. We applied our benchmark to three open-source FDSDS (Moshi, Freeze-omni, and VITA-1.5) using over 40 hours of generated speech, with 293 simulated conversations and 1,200 interruptions. The results show that challenges, such as failing to respond and reply to user interruptions, for all models remain under frequent disruptions and noisy conditions. Demos, data, and codes will be released.</subtitle><entry><title type="html">Experimental Results &amp;amp; Delay Analysis</title><link href="http://localhost:4000/demos/2025/02/25/Analyze.html" rel="alternate" type="text/html" title="Experimental Results &amp;amp; Delay Analysis" /><published>2025-02-25T17:20:35+08:00</published><updated>2025-02-25T17:20:35+08:00</updated><id>http://localhost:4000/demos/2025/02/25/Analyze</id><content type="html" xml:base="http://localhost:4000/demos/2025/02/25/Analyze.html"><![CDATA[<h2 id="statistics-of-generated-speech-corpus">Statistics of generated speech corpus</h2>
+<h3 id="user-inquiry-speech-corpus">User inquiry speech corpus.</h3>
+<p><strong>Easy / Medium / Hard interruption difficulties have diverse speech duration. For the noisy corpus, we generate three different SNR configurations for Easy portion of F5TTS and CosyVoice2.</strong></p>
+
+<table>
+  <thead>
+    <tr>
+      <th>ID</th>
+      <th>TTS Engines</th>
+      <th>Duration (H) E/M/H</th>
+      <th>SNR</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>1</td>
+      <td>ChatTTS</td>
+      <td>4.2 / 2.8 / 2.3</td>
+      <td>-</td>
+    </tr>
+    <tr>
+      <td>2</td>
+      <td>F5TTS</td>
+      <td>3.8 / 2.4 / 2.0</td>
+      <td>-</td>
+    </tr>
+    <tr>
+      <td>3</td>
+      <td>   +Noise-gap</td>
+      <td>3.8 / - / -</td>
+      <td>0/10/20</td>
+    </tr>
+    <tr>
+      <td>4</td>
+      <td>   +Noise-bg</td>
+      <td>3.8 / - / -</td>
+      <td>0/10/20</td>
+    </tr>
+    <tr>
+      <td>5</td>
+      <td>CosyVoice2</td>
+      <td>4.2 / 2.8 / 2.4</td>
+      <td>-</td>
+    </tr>
+    <tr>
+      <td>6</td>
+      <td>   +Noise-gap</td>
+      <td>4.2 / - / -</td>
+      <td>0/10/20</td>
+    </tr>
+    <tr>
+      <td>7</td>
+      <td>   +Noise-bg</td>
+      <td>4.2 / - / -</td>
+      <td>0/10/20</td>
+    </tr>
+  </tbody>
+</table>
+
+<h2 id="metrics-summary">Metrics summary</h2>
+<p><strong>The evaluation of model robustness under varying levels of user interruptions. Only the results from speech input simulated using Cosyvoice2 are reported in this paper. WER, SRR, SRIR, SIR, EIR, and C-PPL are assessed over the entire output speech response, while IRD, FSED, ERT, and EIT are reported using the median of all collected time values to mitigate the influence of outliers. The Score is calculated as the arithmetic mean of the six scores corresponding to six sub-perspectives derived from all successful responses.</strong></p>
+
+<table>
+  <thead>
+    <tr>
+      <th>Model</th>
+      <th>Data</th>
+      <th>WER↓</th>
+      <th>SRR↑</th>
+      <th>SRIR↑</th>
+      <th>SIR↑</th>
+      <th>EIR↓</th>
+      <th>IRD↓</th>
+      <th>FSED↓</th>
+      <th>ERT</th>
+      <th>EIT</th>
+      <th>C-PPL</th>
+      <th>Score↑</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>Moshi</td>
+      <td>1-E</td>
+      <td>6.0</td>
+      <td>49.8</td>
+      <td>73.3</td>
+      <td>80.8</td>
+      <td>33.2</td>
+      <td>1660</td>
+      <td>1545</td>
+      <td>232</td>
+      <td>1218</td>
+      <td>16</td>
+      <td>-</td>
+    </tr>
+    <tr>
+      <td>Moshi</td>
+      <td>1-M</td>
+      <td>6.2</td>
+      <td>36.6</td>
+      <td>63.0</td>
+      <td>76.8</td>
+      <td>31.5</td>
+      <td>1436</td>
+      <td>1071</td>
+      <td>192</td>
+      <td>1245</td>
+      <td>22</td>
+      <td>-</td>
+    </tr>
+    <tr>
+      <td>Moshi</td>
+      <td>1-H</td>
+      <td>5.4</td>
+      <td>27.5</td>
+      <td>63.5</td>
+      <td>71.6</td>
+      <td>26.6</td>
+      <td>1499</td>
+      <td>1005</td>
+      <td>168</td>
+      <td>1180</td>
+      <td>26</td>
+      <td>-</td>
+    </tr>
+    <tr>
+      <td>Moshi</td>
+      <td>2-E</td>
+      <td>5.8</td>
+      <td>64.5</td>
+      <td>85.7</td>
+      <td>71.4</td>
+      <td>16.9</td>
+      <td>1472</td>
+      <td>212</td>
+      <td>61</td>
+      <td>1750</td>
+      <td>16</td>
+      <td>-</td>
+    </tr>
+    <tr>
+      <td>Moshi</td>
+      <td>2-M</td>
+      <td>4.8</td>
+      <td>46.8</td>
+      <td>75.8</td>
+      <td>65.0</td>
+      <td>15.3</td>
+      <td>1404</td>
+      <td>130</td>
+      <td>55</td>
+      <td>1903</td>
+      <td>21</td>
+      <td>-</td>
+    </tr>
+    <tr>
+      <td>Moshi</td>
+      <td>2-H</td>
+      <td>5.7</td>
+      <td>34.4</td>
+      <td>72.5</td>
+      <td>63.5</td>
+      <td>12.1</td>
+      <td>1451</td>
+      <td>127</td>
+      <td>58</td>
+      <td>1663</td>
+      <td>29</td>
+      <td>-</td>
+    </tr>
+    <tr>
+      <td>Moshi</td>
+      <td>5-E</td>
+      <td>5.3</td>
+      <td>61.7</td>
+      <td>79.4</td>
+      <td>83.1</td>
+      <td>27.9</td>
+      <td>1345</td>
+      <td>4155</td>
+      <td>221</td>
+      <td>2008</td>
+      <td>20</td>
+      <td>4.43</td>
+    </tr>
+    <tr>
+      <td>Moshi</td>
+      <td>5-M</td>
+      <td>5.0</td>
+      <td>45.6</td>
+      <td>78.4</td>
+      <td>77.1</td>
+      <td>23.1</td>
+      <td>1453</td>
+      <td>2735</td>
+      <td>235</td>
+      <td>1887</td>
+      <td>18</td>
+      <td>4.55</td>
+    </tr>
+    <tr>
+      <td>Moshi</td>
+      <td>5-H</td>
+      <td>5.0</td>
+      <td>34.1</td>
+      <td>75.3</td>
+      <td>73.0</td>
+      <td>19.5</td>
+      <td>1527</td>
+      <td>2020</td>
+      <td>235</td>
+      <td>1649</td>
+      <td>25</td>
+      <td>4.42</td>
+    </tr>
+    <tr>
+      <td>Freeze-omni</td>
+      <td>1-E</td>
+      <td>-</td>
+      <td>14.3</td>
+      <td>49.9</td>
+      <td>72.5</td>
+      <td>20.5</td>
+      <td>3461</td>
+      <td>632</td>
+      <td>249</td>
+      <td>1299</td>
+      <td>34</td>
+      <td>-</td>
+    </tr>
+    <tr>
+      <td>Freeze-omni</td>
+      <td>1-M</td>
+      <td>-</td>
+      <td>10.9</td>
+      <td>30.6</td>
+      <td>50.7</td>
+      <td>12.1</td>
+      <td>13067</td>
+      <td>624</td>
+      <td>262</td>
+      <td>1470</td>
+      <td>24</td>
+      <td>-</td>
+    </tr>
+    <tr>
+      <td>Freeze-omni</td>
+      <td>1-H</td>
+      <td>-</td>
+      <td>10.0</td>
+      <td>21.8</td>
+      <td>46.6</td>
+      <td>10.3</td>
+      <td>13359</td>
+      <td>534</td>
+      <td>228</td>
+      <td>1675</td>
+      <td>174</td>
+      <td>-</td>
+    </tr>
+    <tr>
+      <td>Freeze-omni</td>
+      <td>2-E</td>
+      <td>-</td>
+      <td>14.5</td>
+      <td>40.0</td>
+      <td>64.8</td>
+      <td>20.2</td>
+      <td>12407</td>
+      <td>685</td>
+      <td>263</td>
+      <td>1510</td>
+      <td>53</td>
+      <td>-</td>
+    </tr>
+    <tr>
+      <td>Freeze-omni</td>
+      <td>2-M</td>
+      <td>-</td>
+      <td>14.8</td>
+      <td>29.0</td>
+      <td>47.9</td>
+      <td>13.5</td>
+      <td>12315</td>
+      <td>648</td>
+      <td>235</td>
+      <td>1353</td>
+      <td>132</td>
+      <td>-</td>
+    </tr>
+    <tr>
+      <td>Freeze-omni</td>
+      <td>2-H</td>
+      <td>-</td>
+      <td>14.3</td>
+      <td>22.9</td>
+      <td>45.0</td>
+      <td>14.6</td>
+      <td>12158</td>
+      <td>656</td>
+      <td>274</td>
+      <td>1454</td>
+      <td>145</td>
+      <td>-</td>
+    </tr>
+    <tr>
+      <td>Freeze-omni</td>
+      <td>5-E</td>
+      <td>-</td>
+      <td>11.3</td>
+      <td>35.5</td>
+      <td>66.5</td>
+      <td>31.5</td>
+      <td>3618</td>
+      <td>515</td>
+      <td>180</td>
+      <td>2027</td>
+      <td>73</td>
+      <td>3.29</td>
+    </tr>
+    <tr>
+      <td>Freeze-omni</td>
+      <td>5-M</td>
+      <td>-</td>
+      <td>11.7</td>
+      <td>21.7</td>
+      <td>49.4</td>
+      <td>23.5</td>
+      <td>12200</td>
+      <td>449</td>
+      <td>259</td>
+      <td>2047</td>
+      <td>80</td>
+      <td>3.38</td>
+    </tr>
+    <tr>
+      <td>Freeze-omni</td>
+      <td>5-H</td>
+      <td>-</td>
+      <td>11.2</td>
+      <td>18.3</td>
+      <td>49.0</td>
+      <td>23.7</td>
+      <td>11927</td>
+      <td>456</td>
+      <td>311</td>
+      <td>2093</td>
+      <td>110</td>
+      <td>3.14</td>
+    </tr>
+    <tr>
+      <td>VITA-1.5</td>
+      <td>1-E</td>
+      <td>-</td>
+      <td>20.3</td>
+      <td>56.0</td>
+      <td>66.8</td>
+      <td>9.2</td>
+      <td>15288</td>
+      <td>4847</td>
+      <td>255</td>
+      <td>2122</td>
+      <td>29</td>
+      <td>-</td>
+    </tr>
+    <tr>
+      <td>VITA-1.5</td>
+      <td>1-M</td>
+      <td>-</td>
+      <td>13.9</td>
+      <td>48.0</td>
+      <td>69.3</td>
+      <td>18.4</td>
+      <td>14144</td>
+      <td>2932</td>
+      <td>325</td>
+      <td>2046</td>
+      <td>47</td>
+      <td>-</td>
+    </tr>
+    <tr>
+      <td>VITA-1.5</td>
+      <td>1-H</td>
+      <td>-</td>
+      <td>15.4</td>
+      <td>41.6</td>
+      <td>67.8</td>
+      <td>18.1</td>
+      <td>13768</td>
+      <td>1833</td>
+      <td>239</td>
+      <td>1916</td>
+      <td>43</td>
+      <td>-</td>
+    </tr>
+    <tr>
+      <td>VITA-1.5</td>
+      <td>2-E</td>
+      <td>-</td>
+      <td>21.0</td>
+      <td>53.3</td>
+      <td>68.2</td>
+      <td>14.0</td>
+      <td>13349</td>
+      <td>4853</td>
+      <td>312</td>
+      <td>1872</td>
+      <td>27</td>
+      <td>-</td>
+    </tr>
+    <tr>
+      <td>VITA-1.5</td>
+      <td>2-M</td>
+      <td>-</td>
+      <td>17.8</td>
+      <td>46.0</td>
+      <td>71.8</td>
+      <td>17.9</td>
+      <td>12632</td>
+      <td>2602</td>
+      <td>218</td>
+      <td>1829</td>
+      <td>52</td>
+      <td>-</td>
+    </tr>
+    <tr>
+      <td>VITA-1.5</td>
+      <td>2-H</td>
+      <td>-</td>
+      <td>17.4</td>
+      <td>40.0</td>
+      <td>68.1</td>
+      <td>18.9</td>
+      <td>12164</td>
+      <td>1989</td>
+      <td>164</td>
+      <td>1845</td>
+      <td>45</td>
+      <td>-</td>
+    </tr>
+    <tr>
+      <td>VITA-1.5</td>
+      <td>5-E</td>
+      <td>-</td>
+      <td>26.9</td>
+      <td>54.7</td>
+      <td>75.7</td>
+      <td>25.1</td>
+      <td>13063</td>
+      <td>4242</td>
+      <td>234</td>
+      <td>2289</td>
+      <td>28</td>
+      <td>2.68</td>
+    </tr>
+    <tr>
+      <td>VITA-1.5</td>
+      <td>5-M</td>
+      <td>-</td>
+      <td>18.3</td>
+      <td>48.5</td>
+      <td>81.9</td>
+      <td>32.5</td>
+      <td>10759</td>
+      <td>2601</td>
+      <td>176</td>
+      <td>2174</td>
+      <td>60</td>
+      <td>2.44</td>
+    </tr>
+    <tr>
+      <td>VITA-1.5</td>
+      <td>5-H</td>
+      <td>-</td>
+      <td>17.1</td>
+      <td>45.7</td>
+      <td>78.0</td>
+      <td>35.1</td>
+      <td>4651</td>
+      <td>1840</td>
+      <td>253</td>
+      <td>2270</td>
+      <td>50</td>
+      <td>2.27</td>
+    </tr>
+  </tbody>
+</table>
+
+<h2 id="delay-distribution">Delay Distribution</h2>
+<h3 id="moshi">Moshi</h3>
+<h4 id="chattts-easy">Chattts-Easy</h4>
+
+<div style="display: flex; justify-content: space-around;">
+  <figure style="margin: 0 10px;">
+    <img src="/assets/pie_charts/moshi/chattts-easy/response_delays.png" alt="Image 1" style="max-width: 100%;" />
+    <figcaption style="text-align: center;">response_delays</figcaption>
+  </figure>
+  <figure style="margin: 0 10px;">
+    <img src="/assets/pie_charts/moshi/chattts-easy/response_delays_to_interruption.png" alt="Image 2" style="max-width: 100%;" />
+    <figcaption style="text-align: center;">response_delays_to_interruption</figcaption>
+  </figure>
+</div>
+<div style="display: flex; justify-content: space-around;">
+<figure style="margin: 0 10px;">
+    <img src="/assets/pie_charts/moshi/chattts-easy/interruption_success_delays.png" style="max-width: 100%;" />
+<figcaption style="text-align: center;">interruption_delays</figcaption>
+</figure>
+</div>
+
+<h4 id="chattts-med">Chattts-Med</h4>
+
+<div style="display: flex; justify-content: space-around;">
+  <figure style="margin: 0 10px;">
+    <img src="/assets/pie_charts/moshi/chattts-med/response_delays.png" alt="Image 1" style="max-width: 100%;" />
+    <figcaption style="text-align: center;">response_delays</figcaption>
+  </figure>
+  <figure style="margin: 0 10px;">
+    <img src="/assets/pie_charts/moshi/chattts-med/response_delays_to_interruption.png" alt="Image 2" style="max-width: 100%;" />
+    <figcaption style="text-align: center;">response_delays_to_interruption</figcaption>
+  </figure>
+</div>
+<div style="display: flex; justify-content: space-around;">
+<figure style="margin: 0 10px;">
+    <img src="/assets/pie_charts/moshi/chattts-med/interruption_success_delays.png" style="max-width: 100%;" />
+<figcaption style="text-align: center;">interruption_delays</figcaption>
+</figure>
+</div>
+
+<h4 id="chattts-hard">Chattts-Hard</h4>
+
+<div style="display: flex; justify-content: space-around;">
+  <figure style="margin: 0 10px;">
+    <img src="/assets/pie_charts/moshi/chattts-hard/response_delays.png" alt="Image 1" style="max-width: 100%;" />
+    <figcaption style="text-align: center;">response_delays</figcaption>
+  </figure>
+  <figure style="margin: 0 10px;">
+    <img src="/assets/pie_charts/moshi/chattts-hard/response_delays_to_interruption.png" alt="Image 2" style="max-width: 100%;" />
+    <figcaption style="text-align: center;">response_delays_to_interruption</figcaption>
+  </figure>
+</div>
+<div style="display: flex; justify-content: space-around;">
+<figure style="margin: 0 10px;">
+    <img src="/assets/pie_charts/moshi/chattts-hard/interruption_success_delays.png" style="max-width: 100%;" />
+<figcaption style="text-align: center;">interruption_delays</figcaption>
+</figure>
+</div>
+
+<h4 id="f5tts-easy">F5tts-Easy</h4>
+
+<div style="display: flex; justify-content: space-around;">
+  <figure style="margin: 0 10px;">
+    <img src="/assets/pie_charts/moshi/f5tts-easy/response_delays.png" alt="Image 1" style="max-width: 100%;" />
+    <figcaption style="text-align: center;">response_delays</figcaption>
+  </figure>
+  <figure style="margin: 0 10px;">
+    <img src="/assets/pie_charts/moshi/f5tts-easy/response_delays_to_interruption.png" alt="Image 2" style="max-width: 100%;" />
+    <figcaption style="text-align: center;">response_delays_to_interruption</figcaption>
+  </figure>
+</div>
+<div style="display: flex; justify-content: space-around;">
+<figure style="margin: 0 10px;">
+    <img src="/assets/pie_charts/moshi/f5tts-easy/interruption_success_delays.png" style="max-width: 100%;" />
+<figcaption style="text-align: center;">interruption_delays</figcaption>
+</figure>
+</div>
+
+<h4 id="f5tts-med">F5tts-Med</h4>
+
+<div style="display: flex; justify-content: space-around;">
+  <figure style="margin: 0 10px;">
+    <img src="/assets/pie_charts/moshi/f5tts-med/response_delays.png" alt="Image 1" style="max-width: 100%;" />
+    <figcaption style="text-align: center;">response_delays</figcaption>
+  </figure>
+  <figure style="margin: 0 10px;">
+    <img src="/assets/pie_charts/moshi/f5tts-med/response_delays_to_interruption.png" alt="Image 2" style="max-width: 100%;" />
+    <figcaption style="text-align: center;">response_delays_to_interruption</figcaption>
+  </figure>
+</div>
+<div style="display: flex; justify-content: space-around;">
+<figure style="margin: 0 10px;">
+    <img src="/assets/pie_charts/moshi/f5tts-med/interruption_success_delays.png" style="max-width: 100%;" />
+<figcaption style="text-align: center;">interruption_delays</figcaption>
+</figure>
+</div>
+
+<h4 id="f5tts-hard">F5tts-Hard</h4>
+
+<div style="display: flex; justify-content: space-around;">
+  <figure style="margin: 0 10px;">
+    <img src="/assets/pie_charts/moshi/f5tts-hard/response_delays.png" alt="Image 1" style="max-width: 100%;" />
+    <figcaption style="text-align: center;">response_delays</figcaption>
+  </figure>
+  <figure style="margin: 0 10px;">
+    <img src="/assets/pie_charts/moshi/f5tts-hard/response_delays_to_interruption.png" alt="Image 2" style="max-width: 100%;" />
+    <figcaption style="text-align: center;">response_delays_to_interruption</figcaption>
+  </figure>
+</div>
+<div style="display: flex; justify-content: space-around;">
+<figure style="margin: 0 10px;">
+    <img src="/assets/pie_charts/moshi/f5tts-hard/interruption_success_delays.png" style="max-width: 100%;" />
+<figcaption style="text-align: center;">interruption_delays</figcaption>
+</figure>
+</div>
+
+<h4 id="cosyvoice2-easy">Cosyvoice2-Easy</h4>
+
+<div style="display: flex; justify-content: space-around;">
+  <figure style="margin: 0 10px;">
+    <img src="/assets/pie_charts/moshi/cosy-easy/response_delays.png" alt="Image 1" style="max-width: 100%;" />
+    <figcaption style="text-align: center;">response_delays</figcaption>
+  </figure>
+  <figure style="margin: 0 10px;">
+    <img src="/assets/pie_charts/moshi/cosy-easy/response_delays_to_interruption.png" alt="Image 2" style="max-width: 100%;" />
+    <figcaption style="text-align: center;">response_delays_to_interruption</figcaption>
+  </figure>
+
+</div>
+<div style="display: flex; justify-content: space-around;">
+<figure style="margin: 0 10px;">
+    <img src="/assets/pie_charts/moshi/cosy-easy/interruption_success_delays.png" style="max-width: 100%;" />
+<figcaption style="text-align: center;">interruption_delays</figcaption>
+</figure>
+</div>
+
+<h4 id="cosyvoice2-med">Cosyvoice2-Med</h4>
+
+<div style="display: flex; justify-content: space-around;">
+  <figure style="margin: 0 10px;">
+    <img src="/assets/pie_charts/moshi/cosy-med/response_delays.png" alt="Image 1" style="max-width: 100%;" />
+    <figcaption style="text-align: center;">response_delays</figcaption>
+  </figure>
+  <figure style="margin: 0 10px;">
+    <img src="/assets/pie_charts/moshi/cosy-med/response_delays_to_interruption.png" alt="Image 2" style="max-width: 100%;" />
+    <figcaption style="text-align: center;">response_delays_to_interruption</figcaption>
+  </figure>
+</div>
+<div style="display: flex; justify-content: space-around;">
+<figure style="margin: 0 10px;">
+    <img src="/assets/pie_charts/moshi/cosy-med/interruption_success_delays.png" style="max-width: 100%;" />
+<figcaption style="text-align: center;">interruption_delays</figcaption>
+</figure>
+</div>
+
+<h4 id="cosyvoice2-hard">Cosyvoice2-Hard</h4>
+
+<div style="display: flex; justify-content: space-around;">
+  <figure style="margin: 0 10px;">
+    <img src="/assets/pie_charts/moshi/cosy-hard/response_delays.png" alt="Image 1" style="max-width: 100%;" />
+    <figcaption style="text-align: center;">response_delays</figcaption>
+  </figure>
+  <figure style="margin: 0 10px;">
+    <img src="/assets/pie_charts/moshi/cosy-hard/response_delays_to_interruption.png" alt="Image 2" style="max-width: 100%;" />
+    <figcaption style="text-align: center;">response_delays_to_interruption</figcaption>
+  </figure>
+</div>
+<div style="display: flex; justify-content: space-around;">
+<figure style="margin: 0 10px;">
+    <img src="/assets/pie_charts/moshi/cosy-hard/interruption_success_delays.png" style="max-width: 100%;" />
+<figcaption style="text-align: center;">interruption_delays</figcaption>
+</figure>
+</div>
+
+<h3 id="freeze-omni">Freeze-omni</h3>
+<h4 id="chattts-easy-1">Chattts-Easy</h4>
+
+<div style="display: flex; justify-content: space-around;">
+  <figure style="margin: 0 10px;">
+    <img src="/assets/pie_charts/omni/chattts-easy/response_delays.png" alt="Image 1" style="max-width: 100%;" />
+    <figcaption style="text-align: center;">response_delays</figcaption>
+  </figure>
+  <figure style="margin: 0 10px;">
+    <img src="/assets/pie_charts/omni/chattts-easy/response_delays_to_interruption.png" alt="Image 2" style="max-width: 100%;" />
+    <figcaption style="text-align: center;">response_delays_to_interruption</figcaption>
+  </figure>
+</div>
+<div style="display: flex; justify-content: space-around;">
+<figure style="margin: 0 10px;">
+    <img src="/assets/pie_charts/omni/chattts-easy/interruption_success_delays.png" style="max-width: 100%;" />
+<figcaption style="text-align: center;">interruption_delays</figcaption>
+</figure>
+</div>
+
+<h4 id="chattts-med-1">Chattts-Med</h4>
+
+<div style="display: flex; justify-content: space-around;">
+  <figure style="margin: 0 10px;">
+    <img src="/assets/pie_charts/omni/chattts-med/response_delays.png" alt="Image 1" style="max-width: 100%;" />
+    <figcaption style="text-align: center;">response_delays</figcaption>
+  </figure>
+  <figure style="margin: 0 10px;">
+    <img src="/assets/pie_charts/omni/chattts-med/response_delays_to_interruption.png" alt="Image 2" style="max-width: 100%;" />
+    <figcaption style="text-align: center;">response_delays_to_interruption</figcaption>
+  </figure>
+</div>
+<div style="display: flex; justify-content: space-around;">
+<figure style="margin: 0 10px;">
+    <img src="/assets/pie_charts/omni/chattts-med/interruption_success_delays.png" style="max-width: 100%;" />
+<figcaption style="text-align: center;">interruption_delays</figcaption>
+</figure>
+</div>
+
+<h4 id="chattts-hard-1">Chattts-Hard</h4>
+
+<div style="display: flex; justify-content: space-around;">
+  <figure style="margin: 0 10px;">
+    <img src="/assets/pie_charts/omni/chattts-hard/response_delays.png" alt="Image 1" style="max-width: 100%;" />
+    <figcaption style="text-align: center;">response_delays</figcaption>
+  </figure>
+  <figure style="margin: 0 10px;">
+    <img src="/assets/pie_charts/omni/chattts-hard/response_delays_to_interruption.png" alt="Image 2" style="max-width: 100%;" />
+    <figcaption style="text-align: center;">response_delays_to_interruption</figcaption>
+  </figure>
+</div>
+<div style="display: flex; justify-content: space-around;">
+<figure style="margin: 0 10px;">
+    <img src="/assets/pie_charts/omni/chattts-hard/interruption_success_delays.png" style="max-width: 100%;" />
+<figcaption style="text-align: center;">interruption_delays</figcaption>
+</figure>
+</div>
+
+<h4 id="f5tts-easy-1">F5tts-Easy</h4>
+
+<div style="display: flex; justify-content: space-around;">
+  <figure style="margin: 0 10px;">
+    <img src="/assets/pie_charts/omni/f5tts-easy/response_delays.png" alt="Image 1" style="max-width: 100%;" />
+    <figcaption style="text-align: center;">response_delays</figcaption>
+  </figure>
+  <figure style="margin: 0 10px;">
+    <img src="/assets/pie_charts/omni/f5tts-easy/response_delays_to_interruption.png" alt="Image 2" style="max-width: 100%;" />
+    <figcaption style="text-align: center;">response_delays_to_interruption</figcaption>
+  </figure>
+</div>
+<div style="display: flex; justify-content: space-around;">
+<figure style="margin: 0 10px;">
+    <img src="/assets/pie_charts/omni/f5tts-easy/interruption_success_delays.png" style="max-width: 100%;" />
+<figcaption style="text-align: center;">interruption_delays</figcaption>
+</figure>
+</div>
+
+<h4 id="f5tts-med-1">F5tts-Med</h4>
+
+<div style="display: flex; justify-content: space-around;">
+  <figure style="margin: 0 10px;">
+    <img src="/assets/pie_charts/omni/f5tts-med/response_delays.png" alt="Image 1" style="max-width: 100%;" />
+    <figcaption style="text-align: center;">response_delays</figcaption>
+  </figure>
+  <figure style="margin: 0 10px;">
+    <img src="/assets/pie_charts/omni/f5tts-med/response_delays_to_interruption.png" alt="Image 2" style="max-width: 100%;" />
+    <figcaption style="text-align: center;">response_delays_to_interruption</figcaption>
+  </figure>
+</div>
+<div style="display: flex; justify-content: space-around;">
+<figure style="margin: 0 10px;">
+    <img src="/assets/pie_charts/omni/f5tts-med/interruption_success_delays.png" style="max-width: 100%;" />
+<figcaption style="text-align: center;">interruption_delays</figcaption>
+</figure>
+</div>
+
+<h4 id="f5tts-hard-1">F5tts-Hard</h4>
+
+<div style="display: flex; justify-content: space-around;">
+  <figure style="margin: 0 10px;">
+    <img src="/assets/pie_charts/omni/f5tts-hard/response_delays.png" alt="Image 1" style="max-width: 100%;" />
+    <figcaption style="text-align: center;">response_delays</figcaption>
+  </figure>
+  <figure style="margin: 0 10px;">
+    <img src="/assets/pie_charts/omni/f5tts-hard/response_delays_to_interruption.png" alt="Image 2" style="max-width: 100%;" />
+    <figcaption style="text-align: center;">response_delays_to_interruption</figcaption>
+  </figure>
+</div>
+<div style="display: flex; justify-content: space-around;">
+<figure style="margin: 0 10px;">
+    <img src="/assets/pie_charts/omni/f5tts-hard/interruption_success_delays.png" style="max-width: 100%;" />
+<figcaption style="text-align: center;">interruption_delays</figcaption>
+</figure>
+</div>
+
+<h4 id="cosyvoice2-easy-1">Cosyvoice2-Easy</h4>
+
+<div style="display: flex; justify-content: space-around;">
+  <figure style="margin: 0 10px;">
+    <img src="/assets/pie_charts/omni/cosy-easy/response_delays.png" alt="Image 1" style="max-width: 100%;" />
+    <figcaption style="text-align: center;">response_delays</figcaption>
+  </figure>
+  <figure style="margin: 0 10px;">
+    <img src="/assets/pie_charts/omni/cosy-easy/response_delays_to_interruption.png" alt="Image 2" style="max-width: 100%;" />
+    <figcaption style="text-align: center;">response_delays_to_interruption</figcaption>
+  </figure>
+  </div>
+<div style="display: flex; justify-content: space-around;">
+<figure style="margin: 0 10px;">
+    <img src="/assets/pie_charts/omni/cosy-easy/interruption_success_delays.png" style="max-width: 100%;" />
+<figcaption style="text-align: center;">interruption_delays</figcaption>
+</figure>
+</div>
+
+<h4 id="cosyvoice2-med-1">Cosyvoice2-Med</h4>
+
+<div style="display: flex; justify-content: space-around;">
+  <figure style="margin: 0 10px;">
+    <img src="/assets/pie_charts/omni/cosy-med/response_delays.png" alt="Image 1" style="max-width: 100%;" />
+    <figcaption style="text-align: center;">response_delays</figcaption>
+  </figure>
+  <figure style="margin: 0 10px;">
+    <img src="/assets/pie_charts/omni/cosy-med/response_delays_to_interruption.png" alt="Image 2" style="max-width: 100%;" />
+    <figcaption style="text-align: center;">response_delays_to_interruption</figcaption>
+  </figure>
+</div>
+<div style="display: flex; justify-content: space-around;">
+<figure style="margin: 0 10px;">
+    <img src="/assets/pie_charts/omni/cosy-med/interruption_success_delays.png" style="max-width: 100%;" />
+<figcaption style="text-align: center;">interruption_delays</figcaption>
+</figure>
+</div>
+
+<h4 id="cosyvoice2-hard-1">Cosyvoice2-Hard</h4>
+
+<div style="display: flex; justify-content: space-around;">
+  <figure style="margin: 0 10px;">
+    <img src="/assets/pie_charts/omni/cosy-hard/response_delays.png" alt="Image 1" style="max-width: 100%;" />
+    <figcaption style="text-align: center;">response_delays</figcaption>
+  </figure>
+  <figure style="margin: 0 10px;">
+    <img src="/assets/pie_charts/omni/cosy-hard/response_delays_to_interruption.png" alt="Image 2" style="max-width: 100%;" />
+    <figcaption style="text-align: center;">response_delays_to_interruption</figcaption>
+  </figure>
+</div>
+<div style="display: flex; justify-content: space-around;">
+<figure style="margin: 0 10px;">
+    <img src="/assets/pie_charts/omni/cosy-hard/interruption_success_delays.png" style="max-width: 100%;" />
+<figcaption style="text-align: center;">interruption_delays</figcaption>
+</figure>
+</div>
+
+<h3 id="vita-15">VITA-1.5</h3>
+<h4 id="chattts-easy-2">Chattts-Easy</h4>
+
+<div style="display: flex; justify-content: space-around;">
+  <figure style="margin: 0 10px;">
+    <img src="/assets/pie_charts/vita/chattts-easy/response_delays.png" alt="Image 1" style="max-width: 100%;" />
+    <figcaption style="text-align: center;">response_delays</figcaption>
+  </figure>
+  <figure style="margin: 0 10px;">
+    <img src="/assets/pie_charts/vita/chattts-easy/response_delays_to_interruption.png" alt="Image 2" style="max-width: 100%;" />
+    <figcaption style="text-align: center;">response_delays_to_interruption</figcaption>
+  </figure>
+</div>
+<div style="display: flex; justify-content: space-around;">
+<figure style="margin: 0 10px;">
+    <img src="/assets/pie_charts/vita/chattts-easy/interruption_success_delays.png" style="max-width: 100%;" />
+<figcaption style="text-align: center;">interruption_delays</figcaption>
+</figure>
+</div>
+
+<h4 id="chattts-med-2">Chattts-Med</h4>
+
+<div style="display: flex; justify-content: space-around;">
+  <figure style="margin: 0 10px;">
+    <img src="/assets/pie_charts/vita/chattts-med/response_delays.png" alt="Image 1" style="max-width: 100%;" />
+    <figcaption style="text-align: center;">response_delays</figcaption>
+  </figure>
+  <figure style="margin: 0 10px;">
+    <img src="/assets/pie_charts/vita/chattts-med/response_delays_to_interruption.png" alt="Image 2" style="max-width: 100%;" />
+    <figcaption style="text-align: center;">response_delays_to_interruption</figcaption>
+  </figure>
+</div>
+<div style="display: flex; justify-content: space-around;">
+<figure style="margin: 0 10px;">
+    <img src="/assets/pie_charts/vita/chattts-med/interruption_success_delays.png" style="max-width: 100%;" />
+<figcaption style="text-align: center;">interruption_delays</figcaption>
+</figure>
+</div>
+
+<h4 id="chattts-hard-2">Chattts-Hard</h4>
+
+<div style="display: flex; justify-content: space-around;">
+  <figure style="margin: 0 10px;">
+    <img src="/assets/pie_charts/vita/chattts-hard/response_delays.png" alt="Image 1" style="max-width: 100%;" />
+    <figcaption style="text-align: center;">response_delays</figcaption>
+  </figure>
+  <figure style="margin: 0 10px;">
+    <img src="/assets/pie_charts/vita/chattts-hard/response_delays_to_interruption.png" alt="Image 2" style="max-width: 100%;" />
+    <figcaption style="text-align: center;">response_delays_to_interruption</figcaption>
+  </figure>
+</div>
+<div style="display: flex; justify-content: space-around;">
+<figure style="margin: 0 10px;">
+    <img src="/assets/pie_charts/vita/chattts-hard/interruption_success_delays.png" style="max-width: 100%;" />
+<figcaption style="text-align: center;">interruption_delays</figcaption>
+</figure>
+</div>
+
+<h4 id="f5tts-easy-2">F5tts-Easy</h4>
+
+<div style="display: flex; justify-content: space-around;">
+  <figure style="margin: 0 10px;">
+    <img src="/assets/pie_charts/vita/f5tts-easy/response_delays.png" alt="Image 1" style="max-width: 100%;" />
+    <figcaption style="text-align: center;">response_delays</figcaption>
+  </figure>
+  <figure style="margin: 0 10px;">
+    <img src="/assets/pie_charts/vita/f5tts-easy/response_delays_to_interruption.png" alt="Image 2" style="max-width: 100%;" />
+    <figcaption style="text-align: center;">response_delays_to_interruption</figcaption>
+  </figure>
+</div>
+<div style="display: flex; justify-content: space-around;">
+<figure style="margin: 0 10px;">
+    <img src="/assets/pie_charts/vita/f5tts-easy/interruption_success_delays.png" style="max-width: 100%;" />
+<figcaption style="text-align: center;">interruption_delays</figcaption>
+</figure>
+</div>
+
+<h4 id="f5tts-med-2">F5tts-Med</h4>
+
+<div style="display: flex; justify-content: space-around;">
+  <figure style="margin: 0 10px;">
+    <img src="/assets/pie_charts/vita/f5tts-med/response_delays.png" alt="Image 1" style="max-width: 100%;" />
+    <figcaption style="text-align: center;">response_delays</figcaption>
+  </figure>
+  <figure style="margin: 0 10px;">
+    <img src="/assets/pie_charts/vita/f5tts-med/response_delays_to_interruption.png" alt="Image 2" style="max-width: 100%;" />
+    <figcaption style="text-align: center;">response_delays_to_interruption</figcaption>
+  </figure>
+</div>
+<div style="display: flex; justify-content: space-around;">
+<figure style="margin: 0 10px;">
+    <img src="/assets/pie_charts/vita/f5tts-med/interruption_success_delays.png" style="max-width: 100%;" />
+<figcaption style="text-align: center;">interruption_delays</figcaption>
+</figure>
+</div>
+
+<h4 id="f5tts-hard-2">F5tts-Hard</h4>
+
+<div style="display: flex; justify-content: space-around;">
+  <figure style="margin: 0 10px;">
+    <img src="/assets/pie_charts/vita/f5tts-hard/response_delays.png" alt="Image 1" style="max-width: 100%;" />
+    <figcaption style="text-align: center;">response_delays</figcaption>
+  </figure>
+  <figure style="margin: 0 10px;">
+    <img src="/assets/pie_charts/vita/f5tts-hard/response_delays_to_interruption.png" alt="Image 2" style="max-width: 100%;" />
+    <figcaption style="text-align: center;">response_delays_to_interruption</figcaption>
+  </figure>
+</div>
+<div style="display: flex; justify-content: space-around;">
+<figure style="margin: 0 10px;">
+    <img src="/assets/pie_charts/vita/f5tts-hard/interruption_success_delays.png" style="max-width: 100%;" />
+<figcaption style="text-align: center;">interruption_delays</figcaption>
+</figure>
+</div>
+
+<h4 id="cosyvoice2-easy-2">Cosyvoice2-Easy</h4>
+
+<div style="display: flex; justify-content: space-around;">
+  <figure style="margin: 0 10px;">
+    <img src="/assets/pie_charts/vita/cosy-easy/response_delays.png" alt="Image 1" style="max-width: 100%;" />
+    <figcaption style="text-align: center;">response_delays</figcaption>
+  </figure>
+  <figure style="margin: 0 10px;">
+    <img src="/assets/pie_charts/vita/cosy-easy/response_delays_to_interruption.png" alt="Image 2" style="max-width: 100%;" />
+    <figcaption style="text-align: center;">response_delays_to_interruption</figcaption>
+  </figure>
+  </div>
+<div style="display: flex; justify-content: space-around;">
+<figure style="margin: 0 10px;">
+    <img src="/assets/pie_charts/vita/cosy-easy/interruption_success_delays.png" style="max-width: 100%;" />
+<figcaption style="text-align: center;">interruption_delays</figcaption>
+</figure>
+</div>
+
+<h4 id="cosyvoice2-med-2">Cosyvoice2-Med</h4>
+
+<div style="display: flex; justify-content: space-around;">
+  <figure style="margin: 0 10px;">
+    <img src="/assets/pie_charts/vita/cosy-med/response_delays.png" alt="Image 1" style="max-width: 100%;" />
+    <figcaption style="text-align: center;">response_delays</figcaption>
+  </figure>
+  <figure style="margin: 0 10px;">
+    <img src="/assets/pie_charts/vita/cosy-med/response_delays_to_interruption.png" alt="Image 2" style="max-width: 100%;" />
+    <figcaption style="text-align: center;">response_delays_to_interruption</figcaption>
+  </figure>
+</div>
+<div style="display: flex; justify-content: space-around;">
+<figure style="margin: 0 10px;">
+    <img src="/assets/pie_charts/vita/cosy-med/interruption_success_delays.png" style="max-width: 100%;" />
+<figcaption style="text-align: center;">interruption_delays</figcaption>
+</figure>
+</div>
+
+<h4 id="cosyvoice2-hard-2">Cosyvoice2-Hard</h4>
+
+<div style="display: flex; justify-content: space-around;">
+  <figure style="margin: 0 10px;">
+    <img src="/assets/pie_charts/vita/cosy-hard/response_delays.png" alt="Image 1" style="max-width: 100%;" />
+    <figcaption style="text-align: center;">response_delays</figcaption>
+  </figure>
+  <figure style="margin: 0 10px;">
+    <img src="/assets/pie_charts/vita/cosy-hard/response_delays_to_interruption.png" alt="Image 2" style="max-width: 100%;" />
+    <figcaption style="text-align: center;">response_delays_to_interruption</figcaption>
+  </figure>
+</div>
+<div style="display: flex; justify-content: space-around;">
+<figure style="margin: 0 10px;">
+    <img src="/assets/pie_charts/vita/cosy-hard/interruption_success_delays.png" style="max-width: 100%;" />
+<figcaption style="text-align: center;">interruption_delays</figcaption>
+</figure>
+</div>]]></content><author><name></name></author><category term="Demos" /><summary type="html"><![CDATA[Statistics of generated speech corpus User inquiry speech corpus. Easy / Medium / Hard interruption difficulties have diverse speech duration. For the noisy corpus, we generate three different SNR configurations for Easy portion of F5TTS and CosyVoice2.]]></summary></entry><entry><title type="html">Demos for FD-Bench</title><link href="http://localhost:4000/demos/2025/02/25/Demo-page.html" rel="alternate" type="text/html" title="Demos for FD-Bench" /><published>2025-02-25T13:20:35+08:00</published><updated>2025-02-25T13:20:35+08:00</updated><id>http://localhost:4000/demos/2025/02/25/Demo-page</id><content type="html" xml:base="http://localhost:4000/demos/2025/02/25/Demo-page.html"><![CDATA[<p>This page demonstrates some of the inference samples input using chatTTS, F5TTS and CosyVoice2 models, and the output of Moshi, Freeze-omni, and VITA-1.5 models.</p>
+
+<h2 id="audio-example">Audio Example</h2>
+<p>Here we show three different interruption difficulty level, including easy, medium, and hard, for each TTS model.
+The audio samples are generated from the following simulated conversation. <Further Inquiry=""> and <Topic Shift=""> are involved in this conversation, and the total round is 4.</Topic></Further></p>
+
+<div class="language-json highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="p">{</span><span class="w">
+    </span><span class="nl">"num_rounds"</span><span class="p">:</span><span class="w"> </span><span class="mi">4</span><span class="p">,</span><span class="w">
+    </span><span class="nl">"user"</span><span class="p">:</span><span class="w"> </span><span class="s2">"Can you suggest a quick and easy dinner recipe? &lt;Further Inquiry&gt; Oh, do you know any vegetarian options? &lt;Further Inquiry&gt; Also, I need a dessert idea that's not too sweet. &lt;Topic Shift&gt; Got it. By the way, any tips on reducing food waste? "</span><span class="p">,</span><span class="w">
+    </span><span class="nl">"ai"</span><span class="p">:</span><span class="w"> </span><span class="s2">"Absolutely! Try making a stir-fry with your choice of protein, mixed vegetables, and soy sauce. Serve it with rice or noodles for a complete meal. &lt;Further Inquiry&gt; Of course, you can use tofu or tempeh instead of meat. Eggplant and bell peppers add great flavor and texture as well. &lt;Further Inquiry&gt; A fruit salad with a drizzle of honey and mint leaves is refreshing and not overly sweet. &lt;Topic Shift&gt; Try meal planning, storing food properly, and using leftovers creatively. Composting is another way to reduce waste. "</span><span class="w">
+</span><span class="p">}</span><span class="w">
+</span></code></pre></div></div>
+
+<h3 id="chattts">ChatTTS</h3>
+<p>Easy:</p>
+<audio controls="">
+  <source src="/assets/audio/conversation_10_chattts_easy.wav" type="audio/wav" />
+    Your browser does not support the audio element.
+</audio>
+
+<p>Medium:</p>
+<audio controls="">
+  <source src="/assets/audio/conversation_10_chattts_med.wav" type="audio/wav" />
+  Your browser does not support the audio element.
+</audio>
+
+<p>Hard:</p>
+<audio controls="">
+  <source src="/assets/audio/conversation_10_chattts_hard.wav" type="audio/wav" />
+  Your browser does not support the audio element.
+</audio>
+
+<h3 id="f5tts">F5TTS</h3>
+<p>Easy:</p>
+<audio controls="">
+  <source src="/assets/audio/conversation_10_f5tts_easy.wav" type="audio/wav" />
+  Your browser does not support the audio element.
+</audio>
+
+<p>Medium:</p>
+<audio controls="">
+  <source src="/assets/audio/conversation_10_f5tts_med.wav" type="audio/wav" />
+  Your browser does not support the audio element.
+</audio>
+
+<p>Hard:</p>
+<audio controls="">
+  <source src="/assets/audio/conversation_10_f5tts_hard.wav" type="audio/wav" />
+  Your browser does not support the audio element.
+</audio>
+
+<h3 id="cosyvoice2">CosyVoice2</h3>
+<p>Easy:</p>
+<audio controls="">
+  <source src="/assets/audio/conversation_10_cosyvoice_easy.wav" type="audio/wav" />
+  Your browser does not support the audio element.
+</audio>
+
+<p>Medium:</p>
+<audio controls="">
+  <source src="/assets/audio/conversation_10_cosyvoice_med.wav" type="audio/wav" />
+  Your browser does not support the audio element.
+</audio>
+
+<p>Hard:</p>
+<audio controls="">
+  <source src="/assets/audio/conversation_10_cosyvoice_hard.wav" type="audio/wav" />
+  Your browser does not support the audio element.
+</audio>
+
+<p>Easy with 10dB gap-noise:</p>
+<audio controls="">
+  <source src="/assets/audio/conversation_10_cosyvoice_easy_gapnoise.wav" type="audio/wav" />
+  Your browser does not support the audio element.
+</audio>
+
+<p>Easy with 10dB bg-noise:</p>
+<audio controls="">
+  <source src="/assets/audio/conversation_10_cosyvoice_easy_bgnoise.wav" type="audio/wav" />
+  Your browser does not support the audio element.
+</audio>
+
+<h2 id="response-example">Response Example</h2>
+<p>Here we show the response of Moshi, Freeze-omni, and VITA-1.5 models for some of the above conversations. Please wear your headphones to listen to the audio samples. The left channel is the user’s inquiries, and the right channel is the AI’s response.</p>
+
+<h3 id="moshi-cosyvoice2-med">Moshi-cosyvoice2-med</h3>
+<audio controls="">
+  <source src="/assets/audio/combine_moshi_cosy_med.wav" type="audio/wav" />
+  Your browser does not support the audio element.
+</audio>
+
+<h3 id="moshi-cosyvoice2-hard">Moshi-cosyvoice2-hard</h3>
+<audio controls="">
+  <source src="/assets/audio/combine_moshi_cosy_hard.wav" type="audio/wav" />
+  Your browser does not support the audio element.
+</audio>
+
+<h3 id="moshi-f5tts-hard">Moshi-f5tts-hard</h3>
+<audio controls="">
+  <source src="/assets/audio/combine_moshi_f5tts_hard.wav" type="audio/wav" />
+  Your browser does not support the audio element.
+</audio>
+
+<h3 id="freeze-omni-cosyvoice2-hard">Freeze-omni-cosyvoice2-hard</h3>
+<audio controls="">
+  <source src="/assets/audio/combine_omni_cosy_hard.wav" type="audio/wav" />
+  Your browser does not support the audio element.
+</audio>
+
+<h3 id="freeze-omni-chattts-easy">Freeze-omni-chattts-easy</h3>
+<audio controls="">
+  <source src="/assets/audio/combine_omni_chattts_easy.wav" type="audio/wav" />
+  Your browser does not support the audio element.
+</audio>
+
+<h3 id="vita-15-f5tts-easy">VITA-1.5-f5tts-easy</h3>
+<audio controls="">
+  <source src="/assets/audio/combine_vita_f5tts_easy.wav" type="audio/wav" />
+  Your browser does not support the audio element.
+</audio>
+
+<h3 id="vita-15-chattts-hard">VITA-1.5-chattts-hard</h3>
+<audio controls="">
+  <source src="/assets/audio/combine_vita_chattts_hard.wav" type="audio/wav" />
+  Your browser does not support the audio element.
+</audio>]]></content><author><name></name></author><category term="Demos" /><summary type="html"><![CDATA[This page demonstrates some of the inference samples input using chatTTS, F5TTS and CosyVoice2 models, and the output of Moshi, Freeze-omni, and VITA-1.5 models.]]></summary></entry></feed>

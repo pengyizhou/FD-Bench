@@ -1,0 +1,197 @@
+<!DOCTYPE html>
+<html lang="en"><head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1"><!-- Begin Jekyll SEO tag v2.8.0 -->
+<title>FD-Bench | Full-duplex spoken dialogue systems (FDSDS) enable more natural human-machine interactions by allowing real-time user interruptions and backchanneling, compared with traditional SDS relying on turn-taking manners. However, current benchmarking lacks evaluation metrics for FD scenes, e.g., evaluating model performance under user interruption cases. In this paper, we present a comprehensive FD benchmarking pipeline utilizing LLMs, TTS, and ASR to address this gap. It assesses FDSDS’s ability to handle user interruptions, manage delays, and robustness in challenging scenarios with diverse novel metrics. We applied our benchmark to three open-source FDSDS (Moshi, Freeze-omni, and VITA-1.5) using over 40 hours of generated speech, with 293 simulated conversations and 1,200 interruptions. The results show that challenges, such as failing to respond and reply to user interruptions, for all models remain under frequent disruptions and noisy conditions. Demos, data, and codes will be released.</title>
+<meta name="generator" content="Jekyll v3.10.0" />
+<meta property="og:title" content="FD-Bench" />
+<meta property="og:locale" content="en_US" />
+<meta name="description" content="Full-duplex spoken dialogue systems (FDSDS) enable more natural human-machine interactions by allowing real-time user interruptions and backchanneling, compared with traditional SDS relying on turn-taking manners. However, current benchmarking lacks evaluation metrics for FD scenes, e.g., evaluating model performance under user interruption cases. In this paper, we present a comprehensive FD benchmarking pipeline utilizing LLMs, TTS, and ASR to address this gap. It assesses FDSDS’s ability to handle user interruptions, manage delays, and robustness in challenging scenarios with diverse novel metrics. We applied our benchmark to three open-source FDSDS (Moshi, Freeze-omni, and VITA-1.5) using over 40 hours of generated speech, with 293 simulated conversations and 1,200 interruptions. The results show that challenges, such as failing to respond and reply to user interruptions, for all models remain under frequent disruptions and noisy conditions. Demos, data, and codes will be released." />
+<meta property="og:description" content="Full-duplex spoken dialogue systems (FDSDS) enable more natural human-machine interactions by allowing real-time user interruptions and backchanneling, compared with traditional SDS relying on turn-taking manners. However, current benchmarking lacks evaluation metrics for FD scenes, e.g., evaluating model performance under user interruption cases. In this paper, we present a comprehensive FD benchmarking pipeline utilizing LLMs, TTS, and ASR to address this gap. It assesses FDSDS’s ability to handle user interruptions, manage delays, and robustness in challenging scenarios with diverse novel metrics. We applied our benchmark to three open-source FDSDS (Moshi, Freeze-omni, and VITA-1.5) using over 40 hours of generated speech, with 293 simulated conversations and 1,200 interruptions. The results show that challenges, such as failing to respond and reply to user interruptions, for all models remain under frequent disruptions and noisy conditions. Demos, data, and codes will be released." />
+<link rel="canonical" href="http://localhost:4000/" />
+<meta property="og:url" content="http://localhost:4000/" />
+<meta property="og:site_name" content="FD-Bench" />
+<meta property="og:type" content="website" />
+<meta name="twitter:card" content="summary" />
+<meta property="twitter:title" content="FD-Bench" />
+<script type="application/ld+json">
+{"@context":"https://schema.org","@type":"WebSite","description":"Full-duplex spoken dialogue systems (FDSDS) enable more natural human-machine interactions by allowing real-time user interruptions and backchanneling, compared with traditional SDS relying on turn-taking manners. However, current benchmarking lacks evaluation metrics for FD scenes, e.g., evaluating model performance under user interruption cases. In this paper, we present a comprehensive FD benchmarking pipeline utilizing LLMs, TTS, and ASR to address this gap. It assesses FDSDS’s ability to handle user interruptions, manage delays, and robustness in challenging scenarios with diverse novel metrics. We applied our benchmark to three open-source FDSDS (Moshi, Freeze-omni, and VITA-1.5) using over 40 hours of generated speech, with 293 simulated conversations and 1,200 interruptions. The results show that challenges, such as failing to respond and reply to user interruptions, for all models remain under frequent disruptions and noisy conditions. Demos, data, and codes will be released.","headline":"FD-Bench","name":"FD-Bench","url":"http://localhost:4000/"}</script>
+<!-- End Jekyll SEO tag -->
+<link rel="stylesheet" href="/assets/main.css"><link type="application/atom+xml" rel="alternate" href="http://localhost:4000/feed.xml" title="FD-Bench" /></head>
+<body><header class="site-header" role="banner">
+    <script src="https://cdn.jsdelivr.net/npm/mathjax@3.2.2/es5/tex-mml-chtml.min.js"></script>
+
+    <div class="wrapper"><a class="site-title" rel="author" href="/">FD-Bench</a><nav class="site-nav">
+          <input type="checkbox" id="nav-trigger" class="nav-trigger" />
+          <label for="nav-trigger">
+            <span class="menu-icon">
+              <svg viewBox="0 0 18 15" width="18px" height="15px">
+                <path d="M18,1.484c0,0.82-0.665,1.484-1.484,1.484H1.484C0.665,2.969,0,2.304,0,1.484l0,0C0,0.665,0.665,0,1.484,0 h15.032C17.335,0,18,0.665,18,1.484L18,1.484z M18,7.516C18,8.335,17.335,9,16.516,9H1.484C0.665,9,0,8.335,0,7.516l0,0 c0-0.82,0.665-1.484,1.484-1.484h15.032C17.335,6.031,18,6.696,18,7.516L18,7.516z M18,13.516C18,14.335,17.335,15,16.516,15H1.484 C0.665,15,0,14.335,0,13.516l0,0c0-0.82,0.665-1.483,1.484-1.483h15.032C17.335,12.031,18,12.695,18,13.516L18,13.516z"/>
+              </svg>
+            </span>
+          </label>
+  
+          <div class="trigger"><a class="page-link" href="/about/">About</a></div>
+        </nav></div>
+  </header><main class="page-content" aria-label="Content">
+      <div class="wrapper">
+        <div class="home"><p>This page is to demostrate unshown experimental results, analysis, and audio samples for the FD-Bench project.</p>
+
+<p><br /><br /></p>
+
+<h2 id="fd-bench-pipeline">FD-Bench pipeline</h2>
+<p><img src="/assets/images/FDSDS-benchmarking-pipeline.drawio.png" width="800" height="200" alt="FD-Bench pipeline" />
+Figure 1: Pipeline for Benchmarking FDSDS: The framework integrates simulated conversations generated by GPT-4o and speech synthesis tools to produce input data. Noise samples and reference speech are used for diverse speakers and environments. The pipeline processes these inputs through duplex systems, incorporating Whisper for transcriptions and Silero-VAD for obtaining timestamps. Subjective scoring involves GPT inference, while Conditioned-PPL is from Llama3. Objective metrics are computed using timestamps.</p>
+
+<h2 id="fd-bench-metrics">FD-Bench Metrics</h2>
+<p><img src="/assets/images/example-metrics.png" width="800" height="200" alt="example-metrics" /></p>
+
+<p>Figure 2: Visualization of real-time performance and interruption handling. In this example, AI successfully replies (<strong>SR</strong>) to the user inquiry (<strong>UI</strong>) with a slightly early reply time (<strong>ERT</strong>). Then, some noise from the user interrupts (<strong>NI</strong>) AI. AI resumes a reply, and the user interrupts, interruption response delays (<strong>IRD</strong>) the AI’s being successfully interrupted (<strong>SI</strong>). When the user stops the interruption, AI successfully replies to interruption (<strong>SRI</strong>) after the first speech emits delay (<strong>FSED</strong>). However, AI does not respond to the user’s next interruption and keeps talking. In the last round, AI early interrupts (<strong>EI</strong>) the user’s inquiry for early interrupt time (<strong>EIT</strong>) before the user finishes.</p>
+
+<table>
+  <thead>
+    <tr>
+      <th>Metric</th>
+      <th>Explanation</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td><strong>SRRate</strong></td>
+      <td>Measures the odds of <strong>S</strong>uccess-<strong>R</strong>eplies per User-non-interrupt inquiries.</td>
+    </tr>
+    <tr>
+      <td><strong>SIRate</strong></td>
+      <td>Measures the rates of <strong>S</strong>uccess-<strong>I</strong>nterrupts per User-interrupt inquiries.</td>
+    </tr>
+    <tr>
+      <td><strong>SRIRate</strong></td>
+      <td>Measures the odds of <strong>S</strong>uccess-<strong>R</strong>eplies-to-<strong>I</strong>nterrupts per <strong>SI</strong> (successful interruptions).</td>
+    </tr>
+    <tr>
+      <td><strong>EIRate</strong></td>
+      <td>Measures the odds of <strong>E</strong>arly-<strong>I</strong>nterrupts per User inquiries.</td>
+    </tr>
+    <tr>
+      <td><strong>NIRate</strong></td>
+      <td>Measures the rates of <strong>N</strong>oise-<strong>I</strong>nterrupts per Noise gaps between user inquiries.</td>
+    </tr>
+    <tr>
+      <td><strong>IRD</strong></td>
+      <td>Interrupt-response-delay: the delay between an interruption and the system’s response.</td>
+    </tr>
+    <tr>
+      <td><strong>FSED</strong></td>
+      <td>First-speech-emit-delay: the delay before the system emits its first speech.</td>
+    </tr>
+    <tr>
+      <td><strong>ERT</strong></td>
+      <td>Early-reply-time: indicates how soon the system replies, potentially before expected.</td>
+    </tr>
+    <tr>
+      <td><strong>EIT</strong></td>
+      <td>Early-interrupt-time: indicates how prematurely the system interrupts.</td>
+    </tr>
+    <tr>
+      <td><strong>WER</strong></td>
+      <td>Word-Error-Rate: evaluates the accuracy of generated speech against the output text, reflecting the overall fidelity of the spoken output.</td>
+    </tr>
+  </tbody>
+</table>
+
+<table>
+  <thead>
+    <tr>
+      <th>Metric</th>
+      <th>Formula</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td><strong>C-PPL</strong></td>
+      <td><span class="math">\( \exp\left(-\frac{1}{N}\sum_{i=1}^{N}\log p\left(r_i \mid r_1,\dots,r_{i-1},\boldsymbol{c}\right) \right) \)</span></td>
+    </tr>
+    <tr>
+      <td><strong>SRR</strong></td>
+      <td><span class="math">\( {\text{SRs}}/{\text{UIs}} \)</span></td>
+    </tr>
+    <tr>
+      <td><strong>SRIR</strong></td>
+      <td><span class="math">\( {\text{SRs}_{\text{int}}}/{\text{UIs}_{\text{int}}} \)</span></td>
+    </tr>
+    <tr>
+      <td><strong>SIR</strong></td>
+      <td><span class="math">\( {\text{SIs}_{\text{mdl}}}/{\text{UIs}_{\text{int}}} \)</span></td>
+    </tr>
+    <tr>
+      <td><strong>EIR</strong></td>
+      <td><span class="math">\( {\text{EIs}_{\text{usr}}}/{\text{UIs}} \)</span></td>
+    </tr>
+    <tr>
+      <td><strong>NIR</strong></td>
+      <td><span class="math">\( {\text{NIs}_{\text{mdl}}}/{\text{NIs}_{\text{usr}}} \)</span></td>
+    </tr>
+    <tr>
+      <td><strong>IRD</strong></td>
+      <td><span class="math">\( \text{StopSpeak}_{\text{mdl}_{r-1}} - \text{StartSpeak}_{\text{usr}_{r}} \)</span></td>
+    </tr>
+    <tr>
+      <td><strong>FSED</strong></td>
+      <td><span class="math">\( \text{StartSpeak}_{\text{mdl}_{r}} - \text{StopSpeak}_{\text{usr}_{r}} \)</span></td>
+    </tr>
+    <tr>
+      <td><strong>ERT</strong></td>
+      <td><span class="math">\( \text{StopSpeak}_{\text{usr}_{t}} - \text{StartSpeak}_{\text{mdl}_{r}} \)</span></td>
+    </tr>
+    <tr>
+      <td><strong>EIT</strong></td>
+      <td><span class="math">\( \text{StopSpeak}_{\text{usr}_{r}} - \text{StartSpeak}_{\text{mdl}_{t}} \)</span></td>
+    </tr>
+  </tbody>
+</table>
+<h2 class="post-list-heading">Posts</h2>
+    <ul class="post-list"><li><span class="post-meta">Feb 25, 2025</span>
+        <h3>
+          <a class="post-link" href="/demos/2025/02/25/Analyze.html">
+            Experimental Results &amp; Delay Analysis
+          </a>
+        </h3></li><li><span class="post-meta">Feb 25, 2025</span>
+        <h3>
+          <a class="post-link" href="/demos/2025/02/25/Demo-page.html">
+            Demos for FD-Bench
+          </a>
+        </h3></li></ul></div>
+      </div>
+    </main><footer class="site-footer h-card">
+    <data class="u-url" href="/"></data>
+  
+    <div class="wrapper">
+  
+      <div class="footer-col-wrapper">
+        <div class="footer-col">
+          <!-- <p class="feed-subscribe">
+            <a href="http://localhost:4000/feed.xml">
+              <svg class="svg-icon orange">
+                <path d="M12.8 16C12.8 8.978 7.022 3.2 0 3.2V0c8.777 0 16 7.223 16 16h-3.2zM2.194
+                  11.61c1.21 0 2.195.985 2.195 2.196 0 1.21-.99 2.194-2.2 2.194C.98 16 0 15.017 0
+                  13.806c0-1.21.983-2.195 2.194-2.195zM10.606
+                  16h-3.11c0-4.113-3.383-7.497-7.496-7.497v-3.11c5.818 0 10.606 4.79 10.606 10.607z"
+                />
+              </svg><span>Subscribe</span>
+            </a>
+          </p> -->
+        </div>
+        <div class="footer-col">
+          <p>Full-duplex spoken dialogue systems (FDSDS) enable more natural human-machine interactions by allowing real-time user interruptions and backchanneling, compared with traditional SDS relying on turn-taking manners. However, current benchmarking lacks evaluation metrics for FD scenes, e.g., evaluating model performance under user interruption cases. In this paper, we present a comprehensive FD benchmarking pipeline utilizing LLMs, TTS, and ASR to address this gap. It assesses FDSDS’s ability to handle user interruptions, manage delays, and robustness in challenging scenarios with diverse novel metrics. We applied our benchmark to three open-source FDSDS (Moshi, Freeze-omni, and VITA-1.5) using over 40 hours of generated speech, with 293 simulated conversations and 1,200 interruptions. The results show that challenges, such as failing to respond and reply to user interruptions, for all models remain under frequent disruptions and noisy conditions. Demos, data, and codes will be released.</p>
+        </div>
+      </div>
+  
+      <div class="social-links"><ul class="social-media-list"></ul>
+</div>
+  
+    </div>
+  
+  </footer></body>
+
+</html>

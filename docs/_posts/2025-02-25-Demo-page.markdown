@@ -1,0 +1,136 @@
+---
+layout: post
+title:  "Demos for FD-Bench"
+date:   2025-02-25 13:20:35 +0800
+categories: Demos
+---
+
+
+This page demonstrates some of the inference samples input using chatTTS, F5TTS and CosyVoice2 models, and the output of Moshi, Freeze-omni, and VITA-1.5 models.
+
+## Audio Example
+Here we show three different interruption difficulty level, including easy, medium, and hard, for each TTS model.
+The audio samples are generated from the following simulated conversation. <Further Inquiry> and <Topic Shift> are involved in this conversation, and the total round is 4.
+
+```json
+{
+    "num_rounds": 4,
+    "user": "Can you suggest a quick and easy dinner recipe? <Further Inquiry> Oh, do you know any vegetarian options? <Further Inquiry> Also, I need a dessert idea that's not too sweet. <Topic Shift> Got it. By the way, any tips on reducing food waste? ",
+    "ai": "Absolutely! Try making a stir-fry with your choice of protein, mixed vegetables, and soy sauce. Serve it with rice or noodles for a complete meal. <Further Inquiry> Of course, you can use tofu or tempeh instead of meat. Eggplant and bell peppers add great flavor and texture as well. <Further Inquiry> A fruit salad with a drizzle of honey and mint leaves is refreshing and not overly sweet. <Topic Shift> Try meal planning, storing food properly, and using leftovers creatively. Composting is another way to reduce waste. "
+}
+```
+
+### ChatTTS
+Easy: 
+<audio controls>
+  <source src="{{ '/assets/audio/conversation_10_chattts_easy.wav' | relative_url }}" type="audio/wav">
+    Your browser does not support the audio element.
+</audio>
+
+Medium:
+<audio controls>
+  <source src="{{ '/assets/audio/conversation_10_chattts_med.wav' | relative_url }}" type="audio/wav">
+  Your browser does not support the audio element.
+</audio>
+
+Hard:
+<audio controls>
+  <source src="{{ '/assets/audio/conversation_10_chattts_hard.wav' | relative_url }}" type="audio/wav">
+  Your browser does not support the audio element.
+</audio>
+
+### F5TTS
+Easy:
+<audio controls>
+  <source src="{{ '/assets/audio/conversation_10_f5tts_easy.wav' | relative_url }}" type="audio/wav">
+  Your browser does not support the audio element.
+</audio>
+
+Medium:
+<audio controls>
+  <source src="{{ '/assets/audio/conversation_10_f5tts_med.wav' | relative_url }}" type="audio/wav">
+  Your browser does not support the audio element.
+</audio>
+
+Hard:
+<audio controls>
+  <source src="{{ '/assets/audio/conversation_10_f5tts_hard.wav' | relative_url }}" type="audio/wav">
+  Your browser does not support the audio element.
+</audio>
+
+### CosyVoice2
+Easy:
+<audio controls>
+  <source src="{{ '/assets/audio/conversation_10_cosyvoice_easy.wav' | relative_url }}" type="audio/wav">
+  Your browser does not support the audio element.
+</audio>
+
+Medium:
+<audio controls>
+  <source src="{{ '/assets/audio/conversation_10_cosyvoice_med.wav' | relative_url }}" type="audio/wav">
+  Your browser does not support the audio element.
+</audio>
+
+Hard:
+<audio controls>
+  <source src="{{ '/assets/audio/conversation_10_cosyvoice_hard.wav' | relative_url }}" type="audio/wav">
+  Your browser does not support the audio element.
+</audio>
+
+Easy with 10dB gap-noise:
+<audio controls>
+  <source src="{{ '/assets/audio/conversation_10_cosyvoice_easy_gapnoise.wav' | relative_url }}" type="audio/wav">
+  Your browser does not support the audio element.
+</audio>
+
+Easy with 10dB bg-noise:
+<audio controls>
+  <source src="{{ '/assets/audio/conversation_10_cosyvoice_easy_bgnoise.wav' | relative_url }}" type="audio/wav">
+  Your browser does not support the audio element.
+</audio>
+
+## Response Example
+Here we show the response of Moshi, Freeze-omni, and VITA-1.5 models for some of the above conversations. Please wear your headphones to listen to the audio samples. The left channel is the user's inquiries, and the right channel is the AI's response.
+
+### Moshi-cosyvoice2-med
+<audio controls>
+  <source src="{{ '/assets/audio/combine_moshi_cosy_med.wav' | relative_url }}" type="audio/wav">
+  Your browser does not support the audio element.
+</audio>
+
+
+### Moshi-cosyvoice2-hard
+<audio controls>
+  <source src="{{ '/assets/audio/combine_moshi_cosy_hard.wav' | relative_url }}" type="audio/wav">
+  Your browser does not support the audio element.
+</audio>
+
+### Moshi-f5tts-hard
+<audio controls>
+  <source src="{{ '/assets/audio/combine_moshi_f5tts_hard.wav' | relative_url }}" type="audio/wav">
+  Your browser does not support the audio element.
+</audio>
+
+### Freeze-omni-cosyvoice2-hard 
+<audio controls>
+  <source src="{{ '/assets/audio/combine_omni_cosy_hard.wav' | relative_url }}" type="audio/wav">
+  Your browser does not support the audio element.
+</audio>
+
+### Freeze-omni-chattts-easy 
+<audio controls>
+  <source src="{{ '/assets/audio/combine_omni_chattts_easy.wav' | relative_url }}" type="audio/wav">
+  Your browser does not support the audio element.
+</audio>
+
+### VITA-1.5-f5tts-easy 
+<audio controls>
+  <source src="{{ '/assets/audio/combine_vita_f5tts_easy.wav' | relative_url }}" type="audio/wav">
+  Your browser does not support the audio element.
+</audio>
+
+### VITA-1.5-chattts-hard 
+<audio controls>
+  <source src="{{ '/assets/audio/combine_vita_chattts_hard.wav' | relative_url }}" type="audio/wav">
+  Your browser does not support the audio element.
+</audio>
