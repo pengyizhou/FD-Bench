@@ -3,7 +3,7 @@
 <div align="center">
 
 [![Demo Page](https://img.shields.io/badge/Demo-Page-blue)](https://pengyizhou.github.io/FD-Bench/)
-[![ArXiv](https://img.shields.io/badge/ArXiv-Paper-red)](https://arxiv.org/abs/2507.xxxxx)
+[![ArXiv](https://img.shields.io/badge/ArXiv-Paper-red)](https://arxiv.org/abs/2507.19040)
 [![Hugging Face](https://img.shields.io/badge/🤗-Dataset-yellow)](https://huggingface.co/collections/pengyizhou/fd-bench-audio-68674bd6de6feea91ba3ce37)
 [![License](https://img.shields.io/badge/License-NTUitive-green.svg)](LICENSE.txt)
 
@@ -16,7 +16,7 @@ FD-Bench is a comprehensive benchmarking pipeline specifically designed for eval
 ## 🚀 Quick Links
 
 - **🌐 [Demo Page](https://pengyizhou.github.io/FD-Bench/)** - More results
-- **📄 [ArXiv Paper](https://arxiv.org/abs/2507.xxxxx)** - Detailed methodology and findings
+- **📄 [ArXiv Paper](https://arxiv.org/abs/2507.19040)** - Detailed methodology and findings
 - **🤗 [Hugging Face Dataset](https://huggingface.co/collections/pengyizhou/fd-bench-audio-68674bd6de6feea91ba3ce37)** - Download the benchmark dataset
 
 ## ✅ Released
