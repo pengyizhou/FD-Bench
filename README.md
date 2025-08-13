@@ -58,14 +58,8 @@ huggingface-cli download pengyizhou/FD-Bench-Audio-Input --local-dir ./data
 
 ## 🔧 Usage
 
-### Quick Start
-```bash
-# Run benchmarking on your model
-python benchmark/benchmarking.py --model_path YOUR_MODEL_PATH --data_path ./data
-
-# Compute WER scores
-python benchmark/compute-wer.py --predictions YOUR_PREDICTIONS --references ./data/references
-```
+### TODO
+[ ] Missing Model inference code with timestamp generation..
 
 ### Generating TTS Data
 ```bash
