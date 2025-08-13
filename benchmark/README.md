@@ -89,12 +89,10 @@ We will opensource the input and output audio data in huggingface soon.
 ```
 data/
 ├── MODEL-NAME/
-│   └── subjective_metrics/
-│       └── DATASET-TYPE/
-│           ├── conversation_rounds.txt
-│           ├── audio_files/
-│           │   ├── conv_001_round_1.wav
-│           │   └── conv_001_round_2.wav
+│   └── subjective_metrics/...
+|   └── objective_metrics/...
+|   └── Data_name/
+|   └── Data_name.txt
 
 ```
 
