@@ -53,7 +53,17 @@ FD-Bench includes comprehensive evaluation data for full-duplex spoken dialogue 
 ### Download Dataset
 ```bash
 # Download from Hugging Face
-huggingface-cli download pengyizhou/FD-Bench-Audio-Input --local-dir ./data
+git lfs install
+git clone https://huggingface.co/datasets/pengyizhou/FD-Bench-Audio-Input
+
+cd FD-Bench-Audio-Input
+# Enter each subdirectory and unarchive the files
+for dir in */; do
+    cd "$dir"
+    tar -xvf *.tar.gz
+    rm *.tar.gz
+    cd ..
+done
 ```
 
 ## 🔧 Usage
