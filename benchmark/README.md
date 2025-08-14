@@ -64,7 +64,7 @@ This pipeline requires:
 Run the benchmarking pipeline on a specific conversation dataset:
 
 ```bash
-python benchmarking.py path/to/conversation_rounds.txt
+python benchmarking.py path/to/Data_name.txt
 ```
 
 The script will:
@@ -77,15 +77,7 @@ The script will:
 
 ## Input Data Format
 
-### Conversation Data Structure
-Input files should contain conversation data in the following format:
-- **conversation_rounds.txt**: Python dictionary with conversation IDs as keys
-- **Audio files**: Corresponding WAV files for each conversation round
-- **Ground truth**: Reference transcriptions for WER calculation
-
 ### Expected Directory Structure
-We will opensource the input and output audio data in huggingface soon.
-
 ```
 data/
 ├── MODEL-NAME/
@@ -102,25 +94,32 @@ The pipeline generates comprehensive results in structured directories:
 
 ### Objective Metrics
 ```
-data/MODEL-NAME/objective_metrics/DATASET-TYPE/
+data/MODEL-NAME/objective_metrics/Data_name/
 ├── metrics.scores        # All calculated metrics
 ```
 ### Visualization
 ```
-data/MODEL-NAME/objective_metrics/DATASET-TYPE/
+data/MODEL-NAME/objective_metrics/Data_name/
 ├── interruption_success_delays.png      # Timing analysis of successful interruption handling
 ├── lead_times.png                       # Distribution of AI response lead times in conversations
 ├── lead_times_to_interruption.png       # Lead time analysis specifically for interruption events
 ├── response_delays.png                  # Overall response delay patterns and distributions
 └── response_delays_to_interruption.png  # Response delays measured after user interruptions
 ```
-
-### Processed Data
+### Speech Recognition Results (If applicable)
 ```
-├── processed/
-│   ├── asr_transcripts/         # WhisperX transcription results
-│   ├── vad_segments/            # Voice activity detection output
-│   └── timing_analysis/         # Detailed timing measurements
+data/MODEL-NAME/Data_name_asr/
+├── hyp
+├── ref
+└── wer
+```
+### Subjective Metrics
+```
+data/MODEL-NAME/subjective_metrics/
+├── Data_name/
+│   ├── conversation_round.txt  # processed user-AI conversation text rounds
+│   ├── conversation_round.cppl.txt # Conditional Perplexity raw output from Llama3
+│   └── conversation_round.cppl.score # CPPL scores for each conversation round
 ```
 
 ## Dependencies and External Tools

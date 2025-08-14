@@ -58,9 +58,6 @@ huggingface-cli download pengyizhou/FD-Bench-Audio-Input --local-dir ./data
 
 ## 🔧 Usage
 
-### TODO
-[ ] Missing Model inference code with timestamp generation..
-
 ### Generating TTS Data
 ```bash
 # Using ChatTTS
@@ -76,6 +73,15 @@ cd tts-generation/F5TTS
 python generate_using_f5tts.py
 ```
 
+### Evaluating Models using their specific inference scripts
+Please refer to `examples/` directory for specific model implementations.
+We include examples for:
+- **Freeze-omni**: [Freeze-omni Inference](examples/freeze-omni/README.md)
+- **Moshi**: [Moshi Inference](examples/moshi/README.md)
+- **VITA-1.5**: [VITA-1.5 Inference](examples/vita-1.5/README.md)
+
+### Running the Benchmark
+Please refer to the `benchmark/` directory for the main benchmarking [pipeline](benchmark/README.md).
 ## 📈 Results
 
 Our benchmark evaluates various state-of-the-art FD-SDS models:
