@@ -105,11 +105,13 @@ This project is licensed under the NTUitive License - see the [LICENSE.txt](LICE
 If you use FD-Bench in your research, please cite our paper:
 
 ```bibtex
-@article{fd-bench2024,
-  title={FD-Bench: A Full-Duplex Benchmarking Pipeline Designed for Full Duplex Spoken Dialogue Systems},
-  author={Your Name and Co-authors},
-  journal={arXiv preprint arXiv:XXXX.XXXXX},
-  year={2024}
+@article{peng2025fdbenchfullduplexbenchmarkingpipeline,
+      title={FD-Bench: A Full-Duplex Benchmarking Pipeline Designed for Full Duplex Spoken Dialogue Systems}, 
+      author={Yizhou Peng and Yi-Wen Chao and Dianwen Ng and Yukun Ma and Chongjia Ni and Bin Ma and Eng Siong Chng},
+      year={2025},
+      eprint={2507.19040},
+      archivePrefix={arXiv},
+      url={https://arxiv.org/abs/2507.19040}, 
 }
 ```
 
