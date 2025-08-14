@@ -1,0 +1,509 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>VITA Demo</title>
+    <script src="https://unpkg.com/socket.io-client@4.8.1/dist/socket.io.min.js"></script>
+    <style>
+        body {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            margin: 0;
+            font-family: Arial, sans-serif;
+            background-color: #f0f0f0;
+            box-sizing: border-box;
+        }
+        .container {
+            text-align: center;
+            background: white;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            max-width: 100%;
+            width: 800px;
+            overflow-x: hidden;
+        }
+        canvas {
+            border: 1px solid black;
+            margin: 10px 0;
+        }
+        button {
+            margin: 5px;
+            padding: 10px 20px;
+            font-size: 16px;
+            cursor: pointer;
+        }
+        .alert {
+            display: none;
+            margin-top: 20px;
+            padding: 10px;
+            background-color: #f44336;
+            color: white;
+            border-radius: 5px;
+        }
+
+        .video-container {
+            margin: 20px 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            width: 100%;
+        }
+        
+        #videoCanvas {
+            border: 1px solid #ccc;
+            max-width: 100%;
+            height: auto;
+            object-fit: contain;
+        }
+        
+        #videoElement {
+            display: none;
+        }
+        
+        .button-row {
+            margin-bottom: 10px;
+        }
+        
+        .clear-history-row {
+            margin-bottom: 20px;
+        }
+        
+        @media (max-width: 768px) {
+            body {
+                padding: 10px;
+                align-items: flex-start;
+                min-height: 100vh;
+            }
+            
+            .container {
+                padding: 10px;
+            }
+            
+            .button-row {
+                display: flex;
+                flex-direction: column;
+                gap: 10px;
+            }
+            
+            button {
+                width: 100%;
+                margin: 0;
+            }
+            
+            #videoCanvas {
+                width: 100%;
+                height: auto;
+            }
+            
+            canvas {
+                width: 100%;
+                height: auto;
+            }
+            
+            h1 {
+                font-size: 24px;
+                margin: 10px 0;
+            }
+            
+            h3 {
+                font-size: 18px;
+                margin: 10px 0;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>VITA-1.5 Demo</h1>
+        <div class="button-row">
+            <button id="startButton">Dialogue Start</button>
+            <button id="stopButton" disabled>Dialogue Stop</button>
+            <button id="startVideoButton">Video Start</button>
+            <button id="stopVideoButton" disabled>Video Stop</button>
+        </div>
+        <div class="clear-history-row">
+            <button id="clearHistoryButton">Clear History</button>
+        </div>
+        <h3>Input Video</h3>
+        <div class="video-container">
+            <video id="videoElement" autoplay playsinline style="display: none;"></video>
+            <canvas id="videoCanvas" width="600" height="360"></canvas>
+            <canvas id="hiddenCanvas" width="1280" height="768" style="display: none;"></canvas>
+        </div>
+        <h3>Input Waveform</h3>
+        <canvas id="inputCanvas" width="600" height="50"></canvas>
+        <h3>Output Waveform</h3>
+        <canvas id="outputCanvas" width="600" height="50"></canvas>
+        <audio id="remoteAudio" autoplay playsinline></audio>
+        <div id="alertBox" class="alert">Too many users connected. Please refresh and try again.</div>
+        <div id="alertBox2" class="alert">Connect time out. Please refresh and reconnect.</div>
+        <div id="alertBox3" class="alert">Prompt set success.</div>
+    </div>
+    <script>
+        const remoteAudio = document.getElementById('remoteAudio');
+        const startButton = document.getElementById('startButton');
+        const stopButton = document.getElementById('stopButton');
+        const inputCanvas = document.getElementById('inputCanvas');
+        const outputCanvas = document.getElementById('outputCanvas');
+        const inputCtx = inputCanvas.getContext('2d');
+        const outputCtx = outputCanvas.getContext('2d');
+        const alertBox = document.getElementById('alertBox');
+        const alertBox2 = document.getElementById('alertBox2');
+        const alertBox3 = document.getElementById('alertBox2');
+        const socket = io();
+        const audioQueue = [];
+        let isPlaying = false;
+        let currentSource = null;
+
+        let localStream;
+        let audioContext;
+        let audioContext2;
+        let audioWorklet;
+        let isRecording = false;
+        const fixedSampleRate = 16000;
+
+        const videoElement = document.getElementById('videoElement');
+        const videoCanvas = document.getElementById('videoCanvas');
+        const videoCtx = videoCanvas.getContext('2d');
+        const hiddenCanvas = document.getElementById('hiddenCanvas');
+        const hiddenCtx = hiddenCanvas.getContext('2d');
+        let videoStream = null;
+        let isVideoStarted = false;
+
+        const startVideoButton = document.getElementById('startVideoButton');
+        const stopVideoButton = document.getElementById('stopVideoButton');
+        let videoInterval = null;
+
+        const clearHistoryButton = document.getElementById('clearHistoryButton');
+
+        startButton.addEventListener('click', startRecording);
+        stopButton.addEventListener('click', stopRecording);
+        startVideoButton.addEventListener('click', startVideo);
+        stopVideoButton.addEventListener('click', stopVideo);
+        clearHistoryButton.addEventListener('click', clearHistory);
+
+        audioContext2 = new (window.AudioContext || window.webkitAudioContext)({ sampleRate: 24000 });
+
+        async function initAudioWorklet() {
+            try {
+                if (!audioContext) {
+                    audioContext = new (window.AudioContext || window.webkitAudioContext)({ sampleRate: fixedSampleRate });
+                    await audioContext.audioWorklet.addModule('../static/js/audio-processor.js');
+                }
+            } catch (error) {
+                console.error('Error initializing audio worklet:', error);
+                throw error;
+            }
+        }
+        async function startRecording() {
+            try {
+                // 清理之前的音频队列和源
+                audioQueue.length = 0;
+                if (currentSource) {
+                    currentSource.stop();
+                    currentSource = null;
+                }
+                isPlaying = false;
+                
+                // 确保之前的 audioContext 完全关闭
+                if (audioContext) {
+                    await audioContext.close();
+                    audioContext = null;
+                }
+                
+                // 确保之前的音频流完全停止
+                if (localStream) {
+                    localStream.getTracks().forEach(track => track.stop());
+                }
+
+                // 获取新的音频流
+                try {
+                    localStream = await navigator.mediaDevices.getUserMedia({ 
+                        audio: {
+                            autoGainControl: false, 
+                            echoCancellation: true, 
+                            noiseSuppression: true, 
+                            latency: 0.001
+                        }
+                    });
+                } catch (mediaError) {
+                    showTemporaryAlert(`无法访问麦克风: ${mediaError.message}。请确保已授予麦克风权限。`);
+                }
+
+                // 初始化新的音频上下文
+                try {
+                    await initAudioWorklet();
+                } catch (workletError) {
+                    showTemporaryAlert(`音频处理初始化失败: ${workletError.message}`);
+                }
+                
+                const input = audioContext.createMediaStreamSource(localStream);
+                audioWorklet = new AudioWorkletNode(audioContext, 'audio-processor', {
+                    processorOptions: {},
+                    numberOfInputs: 1,
+                    numberOfOutputs: 1,
+                    channelCount: 1,
+                    outputChannelCount: [1],
+                    bufferSize: 256
+                });
+
+                audioWorklet.port.postMessage({
+                    command: 'setRecording',
+                    value: true
+                });
+
+                audioWorklet.port.onmessage = (e) => {
+                    if (!isRecording) return;
+                    
+                    const { audio, inputData } = e.data;
+                    socket.emit('audio', JSON.stringify({ 
+                        sample_rate: audioContext.sampleRate, 
+                        audio: audio 
+                    }));
+                    drawWaveform(new Float32Array(inputData), inputCtx);
+                };
+
+                input.connect(audioWorklet);
+                audioWorklet.connect(audioContext.destination);
+
+                isRecording = true;
+                startButton.disabled = true;
+                stopButton.disabled = false;
+
+                socket.emit('recording-started');
+            } catch (error) {
+                console.error('Error starting recording:', error);
+                // 发生错误时重置状态
+                isRecording = false;
+                startButton.disabled = false;
+                stopButton.disabled = true;
+            }
+        }
+
+        function stopRecording() {
+            try {
+                // 清理音频队列和源
+                audioQueue.length = 0;
+                if (currentSource) {
+                    currentSource.stop();
+                    currentSource = null;
+                }
+                isPlaying = false;
+                isRecording = false;
+                
+                // 停止并断开 audioWorklet
+                if (audioWorklet) {
+                    audioWorklet.port.postMessage({
+                        command: 'setRecording',
+                        value: false
+                    });
+                    audioWorklet.disconnect();
+                    audioWorklet = null;
+                }
+                
+                // 停止所有音频轨道
+                if (localStream) {
+                    localStream.getTracks().forEach(track => track.stop());
+                    localStream = null;
+                }
+
+                // 关闭音频上下文
+                if (audioContext) {
+                    audioContext.close().then(() => {
+                        audioContext = null;
+                    });
+                }
+                
+                startButton.disabled = false;
+                stopButton.disabled = true;
+
+                socket.emit('recording-stopped');
+            } catch (error) {
+                console.error('Error stopping recording:', error);
+            }
+        }
+
+        function showTemporaryAlert(message, timeout = 1000) {
+            alert(message);
+            setTimeout(() => {
+                const alerts = document.querySelectorAll('.alert');
+                alerts.forEach(alert => {
+                    alert.style.display = 'none';
+                });
+            }, timeout);
+        }
+
+        socket.on('too_many_users', (data) => {
+            showTemporaryAlert('Too many users connected. Please refresh and try again.');
+        });
+
+        socket.on('out_time', (data) => {
+            alert('Connect time out. Please refresh and reconnect.');
+        });
+
+        socket.on('prompt_success', (data) => {
+            alert('Prompt set success. Please restart interaction.');
+        });
+        
+        socket.on('audio', (data) => {
+            audioQueue.push(data);
+            if (!isPlaying) {
+                playNextAudio();
+            }
+        });
+
+        socket.on('stop_tts', () => {
+            stopTTS();
+        });
+
+        function stopTTS() {
+            audioQueue.length = 0;
+            if (currentSource) {
+                currentSource.stop();
+                currentSource = null;
+            }
+            isPlaying = false;
+        }
+
+        function playNextAudio() {
+            if (audioQueue.length === 0) {
+                isPlaying = false;
+                return;
+            }
+
+            isPlaying = true;
+            const data = audioQueue.shift();
+            const audioBuffer = audioContext2.createBuffer(1, data.byteLength / 2, audioContext2.sampleRate);
+            const float32Array = new Float32Array(data.byteLength / 2);
+            const int16Array = new Int16Array(data);
+            for (let i = 0; i < int16Array.length; i++) {
+                float32Array[i] = int16Array[i] / 0x7FFF;
+            }
+            drawWaveform(float32Array, outputCtx);
+            audioBuffer.copyToChannel(float32Array, 0);
+            const source = audioContext2.createBufferSource();
+            source.buffer = audioBuffer;
+            source.connect(audioContext2.destination);
+            source.start();
+
+            currentSource = source;
+
+            source.onended = () => {
+                currentSource = null;
+                playNextAudio();
+            };
+        }
+
+        function drawWaveform(data, context) {
+            context.clearRect(0, 0, context.canvas.width, context.canvas.height);
+            context.beginPath();
+            context.moveTo(0, context.canvas.height / 2);
+            for (let i = 0; i < data.length; i++) {
+                const x = (i / data.length) * context.canvas.width;
+                const y = (1 - data[i]) * context.canvas.height / 2;
+                context.lineTo(x, y);
+            }
+            context.stroke();
+        }
+
+        async function startVideo() {
+            try {
+                let isFrontCamera = false;
+                // 尝试先获取后置摄像头
+                try {
+                    videoStream = await navigator.mediaDevices.getUserMedia({
+                        video: {
+                            facingMode: { exact: "environment" }
+                        }
+                    });
+                    isFrontCamera = false;
+                } catch (err) {
+                    // 如果没有后置摄像头或获取失败，则使用前置摄像头
+                    console.log('后置摄像头不可用，切换到前置摄像头');
+                    videoStream = await navigator.mediaDevices.getUserMedia({
+                        video: {
+                            facingMode: "user"
+                        }
+                    });
+                    isFrontCamera = true;
+                }
+                
+                // 根据摄像头类型设置镜像效果
+                videoCanvas.style.transform = isFrontCamera ? 'scaleX(-1)' : 'none';
+                
+                const videoTrack = videoStream.getVideoTracks()[0];
+                const settings = videoTrack.getSettings();
+                
+                // 计算合适的显示尺寸，保持宽高比
+                const containerWidth = videoCanvas.parentElement.clientWidth;
+                const maxWidth = Math.min(600, containerWidth);
+                const aspectRatio = settings.width / settings.height;
+                
+                let displayWidth = maxWidth;
+                let displayHeight = Math.round(displayWidth / aspectRatio);
+                
+                videoCanvas.style.width = `${displayWidth}px`;
+                videoCanvas.style.height = `${displayHeight}px`;
+                
+                videoCanvas.width = settings.width;
+                videoCanvas.height = settings.height;
+                
+                videoElement.srcObject = videoStream;
+                videoElement.style.display = 'none';
+                
+                requestAnimationFrame(updateVideoCanvas);
+                
+                startVideoButton.disabled = true;
+                stopVideoButton.disabled = false;
+                
+                videoInterval = setInterval(sendVideoFrame, 500);
+            } catch (error) {
+                console.error('Error starting video:', error);
+                alert('无法启动摄像头：' + error.message);
+            }
+        }
+        
+        function updateVideoCanvas() {
+            if (videoStream) {
+                videoCtx.drawImage(videoElement, 0, 0, videoCanvas.width, videoCanvas.height);
+                requestAnimationFrame(updateVideoCanvas);
+            }
+        }
+        
+        function stopVideo() {
+            if (videoInterval) {
+                clearInterval(videoInterval);
+                videoInterval = null;
+            }
+            
+            if (videoStream) {
+                videoStream.getTracks().forEach(track => track.stop());
+                videoStream = null;
+            }
+            
+            videoElement.srcObject = null;
+            startVideoButton.disabled = false;
+            stopVideoButton.disabled = true;
+        }
+        
+        function sendVideoFrame() {
+            hiddenCtx.drawImage(videoElement, 0, 0, hiddenCanvas.width, hiddenCanvas.height);
+            const imageData = hiddenCanvas.toDataURL('image/jpeg', 0.7);
+            socket.emit('video_frame', imageData);
+        }
+
+        function clearHistory() {
+            socket.emit('reset_state');
+            stopRecording();
+            stopVideo();
+            stopTTS();
+            showTemporaryAlert('对话历史已清除');
+            playNextAudio();
+        }
+    </script>
+</body>
+</html>

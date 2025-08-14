@@ -88,7 +88,7 @@ Please refer to `examples/` directory for specific model implementations.
 We include examples for:
 - **Freeze-omni**: [Freeze-omni Inference](examples/freeze-omni/README.md)
 - **Moshi**: [Moshi Inference](examples/moshi/README.md)
-- **VITA-1.5**: [VITA-1.5 Inference](examples/vita-1.5/README.md)
+- **VITA-1.5**: [VITA-1.5 Inference](examples/vita/README.md)
 
 ### Running the Benchmark
 Please refer to the `benchmark/` directory for the main benchmarking [pipeline](benchmark/README.md).
